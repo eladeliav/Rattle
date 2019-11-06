@@ -26,7 +26,11 @@ std::vector<Token> Lexer::tokenize(std::string filename)
     {
         Token currentToken = getToken(std::to_string(ch), lineNumber);
         if(currentToken.getTokenType() == Token::Type::NEWLINE)
+        {
             lineNumber++;
+            buffer = "";
+            continue;
+        }
 
         if(currentToken.getTokenType() == Token::Type::DELIMINATOR)
         {
@@ -59,11 +63,28 @@ std::vector<Token> Lexer::tokenize(std::string filename)
 
 Token Lexer::getToken(std::string buffer, LineNumber line)
 {
-    for(const auto& obj : classifiers)
+    for(const auto& obj : string_classifiers)
     {
         if(obj.among(buffer))
         {
             return Token(buffer, obj.getType(), obj.getTypeName());
+        }
+    }
+
+    for(const auto& obj : char_classifiers)
+    {
+        char asciiVal = 0;
+        try
+        {
+            asciiVal = (char)std::stoi(buffer);
+        }catch(std::invalid_argument& e)
+        {
+            continue;
+        }
+
+        if(obj.among(asciiVal))
+        {
+            return Token(std::string(1, asciiVal), obj.getType(), obj.getTypeName());
         }
     }
 

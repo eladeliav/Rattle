@@ -12,23 +12,18 @@
 
 namespace Lexer
 {
+    template<class T>
     class Classifier
     {
     public:
-        Classifier(Token::Type type, std::string name, std::unordered_set<std::string> tokens) :
+        Classifier(Token::Type type, std::string name, std::unordered_set<T> tokens) :
                 type{type},
                 name{name},
                 tokens{tokens}
         {}
 
-        bool among(const std::string &word) const
+        bool among(const T &word) const
         {
-            if(type == Token::Type::WHITESPACE && word == "32")
-            {
-                return true;
-            }
-            if(type == Token::Type::DELIMINATOR && word == "59")
-                return true;
             return tokens.find(word) != tokens.end();
         }
 
@@ -38,19 +33,24 @@ namespace Lexer
         std::string getTypeName() const
         { return name; };
 
+
     private:
 
         Token::Type type;
         std::string name;
-        std::unordered_set<std::string> tokens;
+        std::unordered_set<T> tokens;
     };
 
-    static const std::vector<Classifier> classifiers{
+    const std::vector<Classifier<std::string>> string_classifiers{
             {Token::Type::KEYWORD,     "Keyword",     {"var", "for", "while", "print", "const"}},
-            {Token::Type::OPERATOR,    "Operator",    {"+",   "-",   "*",     "/",     "=", "==", "!=", "+=", "-=", "*=", "/="}},
-            {Token::Type::DELIMINATOR, "Deliminator", {"(",   ")",   ";"}},
-            {Token::Type::NEWLINE,  "New Line",  {"\n",  "\r",  "\t"}},
-            {Token::Type::WHITESPACE,  "White Space",  {"\n",  "\r",  "\t", " ", ""}},
+            {Token::Type::OPERATOR,    "Operator",    {"+", "-", "/", "=", "*", "==", "!=", "+=", "-=", "*=", "/=", "--", "++"}},
+    };
+
+    const std::vector<Classifier<char>> char_classifiers{
+            {Token::Type::OPERATOR,    "Operator",    {'+', '-', '*', '/', '='}},
+            {Token::Type::NEWLINE,     "New Line",    {'\n',  '\r',  '\t'}},
+            {Token::Type::WHITESPACE,  "White Space", {'\n',  '\r',  '\t',    ' '}},
+            {Token::Type::DELIMINATOR, "Deliminator", {'(',   ')',   ';', '{', '}', '[', ']'}}
     };
 
 };
