@@ -1,21 +1,18 @@
-#include "lexer/Lexer.hpp"
 #include <iostream>
-#include <map>
+#include "lexer/Lexer.hpp"
 using namespace Lexer;
 int main()
 {
-    std::map<Token::Type, std::string> m{
-            {Token::Type::KEYWORD, "Keyword"},
-            {Token::Type::WHITESPACE, "Whitespace"},
-            {Token::Type::LITERAL, "Literal"},
-            {Token::Type::OPERATOR, "Operator"},
-            {Token::Type::IDENTIFIER, "Identifier"},
-            {Token::Type::DELIMINATOR, "Deliminator"}
-    };
-    auto vec = Lexer::tokenize("code.txt");
-
-    for(Token x : vec)
+    while(true)
     {
-        std::cout << x.getValue() << "->" << m.find(x.getTokenType())->second << std::endl;
+        std::string input;
+        std::getline(std::cin, input);
+
+        if(input == "quit")
+            break;
+
+        Lexer::Lex lex(input);
+        std::string result = lex.runExpression();
+        std::cout << result << std::endl;
     }
 }

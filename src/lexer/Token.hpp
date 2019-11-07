@@ -1,63 +1,43 @@
 //
-// Created by elad on 06/11/2019.
+// Created by elade on 11/6/2019.
 //
 
 #ifndef RATTLE_TOKEN_HPP
 #define RATTLE_TOKEN_HPP
-
-#include <unordered_set>
 #include <iostream>
 #include <string>
-
-
 namespace Lexer
 {
+
     class Token
     {
     public:
-        enum class Type
+
+        enum Type
         {
-            IDENTIFIER,
-            KEYWORD,
-            STRING,
-            LITERAL,
-            COMMENT,
-            OPERATOR,
-            DELIMINATOR,
-            WHITESPACE,
-            NEWLINE
+            INTEGER,
+            ADD,
+            SUB,
+            END_OF_LINE
         };
 
+        Token () = default;
 
-    private:
-        std::string value;
-        Type tokenType;
-        std::string typeName;
-    public:
+        Token (const std::string& value, Type type) : value(value), type(type) {}
 
-        Token() = default;
-
-        Token(const Token &token) : value(token.value), tokenType(token.tokenType)
-        { /* empty */ }
-
-        Token(const std::string tokenValue_, Type tokenType_, const std::string typeName_) : value{tokenValue_},
-                                                                                             tokenType{tokenType_},
-                                                                                             typeName{typeName_}
-        {
-        }
-
-        Type getTokenType() const
-        { return tokenType; }
-
-        std::string getValue() const
+        const std::string &getValue() const
         {
             return value;
         }
 
-        std::string getTypeName() const
+        Type getType() const
         {
-            return typeName;
+            return type;
         }
+
+    private:
+        std::string value;
+        Type type;
     };
 
 };

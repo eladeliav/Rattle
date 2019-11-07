@@ -1,106 +1,61 @@
 //
-// Created by elad on 06/11/2019.
+// Created by elade on 11/6/2019.
 //
 
 #include "Lexer.hpp"
 
-using namespace Lexer;
-
-std::vector<Token> Lexer::tokenize(std::string filename)
+Lexer::Token Lexer::Lex::getNextToken()
 {
-    std::ifstream file(filename, std::ios::in);
+    if ((size_t) pos >= this->text.size())
+        return Token("", Token::Type::END_OF_LINE);
 
-    if(file.fail())
+    char ch = text.at(pos);
+
+    std::regex integer_pattern(INTEGER_REGEX);
+
+    if (std::regex_match(std::string(1, ch), integer_pattern))
     {
-        std::cout << "Can't open file " << filename << std::endl;
-        std::cin.get();
-        exit(-2);
+        currentToken = Token(std::string(1, ch), Token::Type::INTEGER);
+        pos++;
+        return currentToken;
     }
 
-    LineNumber lineNumber = 1;
-    std::string buffer = "";
-    char ch;
-    std::vector<Token> tokens;
-
-    while(file >> std::noskipws >> ch)
+    if (ch == '+')
     {
-        Token currentToken = getToken(std::to_string(ch), lineNumber);
-        if(currentToken.getTokenType() == Token::Type::NEWLINE)
-        {
-            lineNumber++;
-            buffer = "";
-            continue;
-        }
-
-        if(currentToken.getTokenType() == Token::Type::DELIMINATOR)
-        {
-            if(buffer != "")
-            {
-                tokens.push_back(getToken(buffer, lineNumber));
-                buffer = "";
-            }
-            tokens.push_back(currentToken);
-            continue;
-        }
-
-        if(currentToken.getTokenType() == Token::Type::WHITESPACE)
-        {
-            if(buffer != "")
-            {
-                tokens.push_back(getToken(buffer, lineNumber));
-                buffer = "";
-            }
-            continue;
-        }
-
-        buffer += ch;
-
+        currentToken = Token(std::string(1, ch), Token::Type::ADD);
+        pos++;
+        return currentToken;
     }
-
-    return tokens;
-
+    return Token("", Token::Type::END_OF_LINE);
 }
 
-Token Lexer::getToken(std::string buffer, LineNumber line)
+void Lexer::Lex::eat(Token::Type type)
 {
-    for(const auto& obj : string_classifiers)
+    if (currentToken.getType() == type)
     {
-        if(obj.among(buffer))
-        {
-            return Token(buffer, obj.getType(), obj.getTypeName());
-        }
+        currentToken = getNextToken();
     }
+    //error
+}
 
-    for(const auto& obj : char_classifiers)
-    {
-        char asciiVal = 0;
-        try
-        {
-            asciiVal = (char)std::stoi(buffer);
-        }catch(std::invalid_argument& e)
-        {
-            continue;
-        }
+std::string Lexer::Lex::runExpression()
+{
+    currentToken = getNextToken();
 
-        if(obj.among(asciiVal))
-        {
-            return Token(std::string(1, asciiVal), obj.getType(), obj.getTypeName());
-        }
-    }
+    Token leftToken = currentToken;
+    eat(Token::Type::INTEGER);
 
-    std::regex identifier_pattern("[a-zA-Z][a-zA-Z0-9_]*");
-    std::regex string_pattern("\".*\"");
-    std::regex literal_pattern("^[0-9]+$");
+    Token op = currentToken;
+    eat(Token::Type::ADD);
 
-    std::array<std::regex, 3> patterns {identifier_pattern, string_pattern, literal_pattern};
-    std::array<Token::Type, 3> types {Token::Type::IDENTIFIER, Token::Type::STRING, Token::Type::LITERAL};
-    std::array<std::string, 3> typeNames {"Identifier", "String", "Literal"};
+    Token right = currentToken;
+    eat(Token::Type::INTEGER);
 
-    for(unsigned int i = 0;  i < patterns.size();i++)
-        if(std::regex_match(buffer, patterns.at(i)))
-            return Token(buffer, types.at(i), typeNames.at(i));
+    int leftNum = std::stoi(leftToken.getValue());
+    int rightNum = std::stoi(right.getValue());
+    int resultNum = leftNum + rightNum;
+    std::string result = std::to_string(resultNum);
 
-    std::cout << "Don't support comments yet at " << line << std::endl;
-    std::cin.get();
-    exit(-1);
+    return result;
+
 }

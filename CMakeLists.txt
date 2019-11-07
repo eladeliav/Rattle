@@ -10,13 +10,12 @@ if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
 endif ()
 
-FILE(GLOB TARGET_H "${CMAKE_SOURCE_DIR}/src/*/*.h")
+FILE(GLOB TARGET_H "${CMAKE_SOURCE_DIR}/src/*/*.hpp")
 FILE(GLOB TARGET_CPP "${CMAKE_SOURCE_DIR}/src/*/*.cpp")
 SET(TARGET_SRC ${TARGET_CPP} ${TARGET_H})
 
-add_executable(${PROJECT_NAME} src/main.cpp
-        src/lexer/Classifier.hpp
-        src/lexer/Lexer.hpp
+add_executable(${PROJECT_NAME}
+        src/main.cpp
         src/lexer/Token.hpp
-        src/lexer/Lexer.cpp
-)
+        src/lexer/Token.cpp
+        src/lexer/Lexer.cpp src/lexer/Lexer.hpp)
