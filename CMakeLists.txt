@@ -16,6 +16,5 @@ SET(TARGET_SRC ${TARGET_CPP} ${TARGET_H})
 
 add_executable(${PROJECT_NAME}
         src/main.cpp
-        src/lexer/Token.hpp
-        src/lexer/Token.cpp
-        src/lexer/Lex.cpp src/lexer/Lex.hpp src/lexer/Parser.cpp src/lexer/Parser.hpp)
+        src/Token.hpp
+        src/Lexer.cpp src/Lexer.hpp src/Parser.cpp src/Parser.hpp src/BinOp.hpp src/Interpreter.cpp src/Interpreter.hpp)

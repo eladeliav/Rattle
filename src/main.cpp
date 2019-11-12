@@ -1,8 +1,8 @@
 #include <iostream>
-#include "lexer/Lex.hpp"
-#include "lexer/Parser.hpp"
+#include "Lexer.hpp"
+#include "Parser.hpp"
+#include "Interpreter.hpp"
 
-using namespace Lexer;
 int main()
 {
     while(true)
@@ -13,8 +13,9 @@ int main()
         if(input == "quit")
             break;
 
-        Lex lex(input);
-        Parser parser(lex);
-        std::cout << parser.expr() << std::endl;
+        Lexer lexer(input);
+        Parser parser(lexer);
+        Interpreter interpreter(parser);
+        std::cout << interpreter.interpret() << std::endl;
     }
 }

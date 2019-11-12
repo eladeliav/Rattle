@@ -2,14 +2,14 @@
 // Created by elade on 11/6/2019.
 //
 
-#include "Lex.hpp"
+#include "Lexer.hpp"
 
-Lexer::Lex::Lex(const std::string &text) : text(text)
+Lexer::Lexer(const std::string &text) : text(text)
 {
     currentChar = text[pos];
 }
 
-void Lexer::Lex::advance()
+void Lexer::advance()
 {
     this->pos++;
     if((size_t) pos > text.size() - 1)
@@ -18,13 +18,13 @@ void Lexer::Lex::advance()
         currentChar = text[pos];
 }
 
-void Lexer::Lex::skip_whitespaces()
+void Lexer::skip_whitespaces()
 {
     while(currentChar != '\0' && std::isspace(currentChar))
         advance();
 }
 
-int Lexer::Lex::getNextInteger()
+int Lexer::getNextInteger()
 {
     std::string sResult;
     while(currentChar != '\0' && std::isdigit(currentChar))
@@ -35,7 +35,7 @@ int Lexer::Lex::getNextInteger()
     return std::stoi(sResult);
 }
 
-Lexer::Token Lexer::Lex::getNextToken()
+Token Lexer::getNextToken()
 {
     while(currentChar != '\0')
     {

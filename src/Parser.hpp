@@ -4,22 +4,22 @@
 
 #ifndef RATTLE_PARSER_HPP
 #define RATTLE_PARSER_HPP
-#include "Lex.hpp"
-
-using namespace Lexer;
+#include "Lexer.hpp"
+#include "BinOp.hpp"
 
 class Parser
 {
 private:
-    Lex lex;
+    Lexer lex;
     Token currentToken;
 public:
-    explicit Parser(Lex lex);
-    std::string expr();
+    explicit Parser(Lexer lex);
+    BinOp* parse();
 private:
     void eat(Token::Type type);
-    int factor();
-    int term();
+    BinOp* factor();
+    BinOp* term();
+    BinOp* expr();
 };
 
 
