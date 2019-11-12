@@ -37,6 +37,11 @@ public:
     Token() = default;
 
     Token(Type type, const std::string &value) : value(value), type(type)
+    {
+        op = END_OF_LINE;
+    }
+
+    Token(const std::string &value, Type type, Type op) : value(value), type(type), op(op)
     {}
 
     const std::string &getValue() const
@@ -49,9 +54,15 @@ public:
         return type;
     }
 
+    Type getOp() const
+    {
+        return op;
+    }
+
 private:
     std::string value;
     Type type;
+    Type op;
 };
 
 const std::unordered_map<Token::Type, std::string> TYPE_CHARS =

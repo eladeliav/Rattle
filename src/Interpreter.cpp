@@ -47,7 +47,10 @@ std::string Interpreter::runTree(BinOp* tree)
     switch(tree->key.getType())
     {
         case Token::INTEGER:
-            return tree->key.getValue();
+            if(tree->key.getOp() == Token::END_OF_LINE)
+                return tree->key.getValue();
+            else
+                return tree->key.getOp() == Token::PLUS ? tree->key.getValue() : std::to_string(-1 * std::stoi(tree->key.getValue()));
         case Token::PLUS:
             lVal = std::stoi(runTree(tree->left));
             rVal = std::stoi(runTree(tree->right));
