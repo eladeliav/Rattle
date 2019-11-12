@@ -7,9 +7,32 @@
 Interpreter::Interpreter(const Parser &parser) : parser(parser)
 {}
 
+void printBT(const std::string& prefix, const BinOp* node, bool isLeft)
+{
+    if( node != nullptr )
+    {
+        std::cout << prefix;
+
+        std::cout << (isLeft ? "|--" : "\\-- " );
+
+        // print the value of the node
+        std::cout << node->key.getValue() << std::endl;
+
+        // enter the next tree level - left and right branch
+        printBT( prefix + (isLeft ? "|   " : "    "), node->left, true);
+        printBT( prefix + (isLeft ? "|   " : "    "), node->right, false);
+    }
+}
+
+void printBT(const BinOp* node)
+{
+    printBT("", node, false);
+}
+
 std::string Interpreter::interpret()
 {
     BinOp* tree = parser.parse();
+    printBT(tree);
     return runTree(tree);
 }
 
@@ -17,10 +40,31 @@ std::string Interpreter::runTree(BinOp* tree)
 {
     if(tree == nullptr)
         return "0";
-    if(tree->key.getType() == Token::Type::PLUS)
+
+    int lVal = 0;
+    int rVal = 0;
+
+    switch(tree->key.getType())
     {
-        int lVal = std::stoi(runTree(tree->left));
-        int rVal = std::stoi(runTree(tree->right));
-        return std::to_string(lVal + rVal);
+        case Token::INTEGER:
+            return tree->key.getValue();
+        case Token::PLUS:
+            lVal = std::stoi(runTree(tree->left));
+            rVal = std::stoi(runTree(tree->right));
+            return std::to_string(lVal + rVal);
+        case Token::MINUS:
+            lVal = std::stoi(runTree(tree->left));
+            rVal = std::stoi(runTree(tree->right));
+            return std::to_string(lVal - rVal);
+        case Token::MUL:
+            lVal = std::stoi(runTree(tree->left));
+            rVal = std::stoi(runTree(tree->right));
+            return std::to_string(lVal * rVal);
+        case Token::DIV:
+            lVal = std::stoi(runTree(tree->left));
+            rVal = std::stoi(runTree(tree->right));
+            return std::to_string(lVal / rVal);
+        default:
+            throw(std::runtime_error("Invalid tree"));
     }
 }

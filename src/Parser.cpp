@@ -22,7 +22,7 @@ Parser::Parser(Lexer lex) : lex(lex)
 
 BinOp* Parser::expr()
 {
-    BinOp* node = factor();
+    BinOp* node = term();
     BinOp *newNode = nullptr;
 
     while (currentToken.getType() == Token::Type::PLUS || currentToken.getType() == Token::Type::MINUS)
@@ -37,9 +37,9 @@ BinOp* Parser::expr()
         }
         newNode = new BinOp(token);
         newNode->left = node;
-        newNode->right = factor();
+        newNode->right = term();
     }
-    return newNode;
+    return newNode == nullptr ? node : newNode;
 }
 
 BinOp* Parser::factor()
@@ -78,7 +78,7 @@ BinOp* Parser::term()
         newNode->left = node;
         newNode->right = factor();
     }
-    return newNode;
+    return newNode == nullptr ? node : newNode;
 }
 
 BinOp* Parser::parse()
