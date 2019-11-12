@@ -6,6 +6,17 @@
 #define RATTLE_TOKEN_HPP
 #include <iostream>
 #include <string>
+#include <unordered_map>
+
+#define INTEGER_REGEX "^[0-9]*$"
+#define PLUS_REGEX "[+]"
+#define MINUS_REGEX "[-]"
+#define MUL_REGEX "[*]"
+#define DIV_REGEX "[/]"
+#define LPAREN_REGEX "[(]"
+#define RPAREN_REGEX "[)]"
+#define END_OF_LINE_REGEX "[\n]"
+
 namespace Lexer
 {
 
@@ -16,14 +27,18 @@ namespace Lexer
         enum Type
         {
             INTEGER,
-            ADD,
-            SUB,
+            PLUS,
+            MINUS,
+            MUL,
+            DIV,
+            LPAREN,
+            RPAREN,
             END_OF_LINE
         };
 
         Token () = default;
 
-        Token (const std::string& value, Type type) : value(value), type(type) {}
+        Token (Type type, const std::string& value) : value(value), type(type) {}
 
         const std::string &getValue() const
         {
@@ -39,6 +54,19 @@ namespace Lexer
         std::string value;
         Type type;
     };
+
+    static std::unordered_map<Token::Type, std::string> TYPE_CHARS  =
+            {
+                    {Token::Type::INTEGER, INTEGER_REGEX},
+                    {Token::Type::PLUS, PLUS_REGEX},
+                    {Token::Type::MINUS, MINUS_REGEX},
+                    {Token::Type::MUL, MUL_REGEX},
+                    {Token::Type::DIV, DIV_REGEX},
+                    {Token::Type::LPAREN, LPAREN_REGEX},
+                    {Token::Type::RPAREN, RPAREN_REGEX},
+                    {Token::Type::END_OF_LINE, END_OF_LINE_REGEX},
+
+            };
 
 };
 

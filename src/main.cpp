@@ -1,5 +1,7 @@
 #include <iostream>
-#include "lexer/Lexer.hpp"
+#include "lexer/Lex.hpp"
+#include "lexer/Parser.hpp"
+
 using namespace Lexer;
 int main()
 {
@@ -11,8 +13,8 @@ int main()
         if(input == "quit")
             break;
 
-        Lexer::Lex lex(input);
-        std::string result = lex.runExpression();
-        std::cout << result << std::endl;
+        Lex lex(input);
+        Parser parser(lex);
+        std::cout << parser.expr() << std::endl;
     }
 }

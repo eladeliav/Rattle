@@ -18,4 +18,4 @@ add_executable(${PROJECT_NAME}
         src/main.cpp
         src/lexer/Token.hpp
         src/lexer/Token.cpp
-        src/lexer/Lexer.cpp src/lexer/Lexer.hpp)
+        src/lexer/Lex.cpp src/lexer/Lex.hpp src/lexer/Parser.cpp src/lexer/Parser.hpp)
