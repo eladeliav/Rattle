@@ -4,6 +4,8 @@
 
 #include "Interpreter.hpp"
 
+std::unordered_map<std::string, std::string> Interpreter::variables;
+
 Interpreter::Interpreter(const Parser &parser) : parser(parser)
 {}
 
@@ -32,7 +34,7 @@ void printBT(const BinNode* node)
 std::string Interpreter::interpret()
 {
     BinNode* tree = parser.parse();
-    printBT(tree);
+    //printBT(tree);
     return runTree(tree);
 }
 
@@ -67,6 +69,27 @@ std::string Interpreter::runTree(BinNode* tree)
             lVal = std::stoi(runTree(tree->left));
             rVal = std::stoi(runTree(tree->right));
             return std::to_string(lVal / rVal);
+        case Token::ASSIGN:
+        {
+            std::string id = tree->left->key.getValue();
+            std::string val = runTree(tree->right);
+            if(variables.find(val) != variables.end())
+            {
+                variables[id] = variables[val];
+            }
+            else
+            {
+
+                variables[id] = val;
+            }
+            return variables[id];
+        }
+        case Token::IDENTIFIER:
+            return variables[tree->key.getValue()];
+        case Token::PRINT:
+        {
+            return runTree(tree->right);
+        }
         default:
             throw(std::runtime_error("Invalid tree"));
     }

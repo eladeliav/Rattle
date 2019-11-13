@@ -20,6 +20,7 @@
 #define END_OF_LINE_REGEX "[\n]"
 #define IDENTIFIER_REGEX "[_a-zA-Z][_a-zA-Z0-9]{0,30}"
 #define ASSIGN_REGEX "[=]"
+#define PRINT_REGEX "(?:^|\\W)rocket(?:$|\\W)"
 
 class Token
 {
@@ -36,6 +37,9 @@ public:
         RPAREN,
         IDENTIFIER,
         ASSIGN,
+        PRINT,
+        XOR,
+        AND,
         END_OF_LINE
     };
 
@@ -49,7 +53,7 @@ public:
     Token(const std::string &value, Type type, Type op) : value(value), type(type), op(op)
     {}
 
-    Token(const Token& other)
+    Token(const Token &other)
     {
         value = other.value;
         type = other.type;
@@ -94,13 +98,14 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::Type::RPAREN,      RPAREN_REGEX},
                 {Token::Type::END_OF_LINE, END_OF_LINE_REGEX},
                 {Token::ASSIGN,            ASSIGN_REGEX},
+                {Token::PRINT,             PRINT_REGEX},
                 {Token::IDENTIFIER,        IDENTIFIER_REGEX}
-
         };
 
 const std::unordered_set<Token::Type> OPERATOR_TYPES = {
         Token::PLUS, Token::MINUS, Token::MUL, Token::DIV, Token::ASSIGN
 };
+
 
 
 #endif //RATTLE_TOKEN_HPP

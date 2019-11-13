@@ -5,6 +5,7 @@
 #ifndef RATTLE_INTERPRETER_HPP
 #define RATTLE_INTERPRETER_HPP
 #include "Parser.hpp"
+#include <unordered_map>
 
 class Interpreter
 {
@@ -14,6 +15,7 @@ public:
 private:
     Parser parser;
     std::string runTree(BinNode* tree);
+    static std::unordered_map<std::string, std::string> variables;
 };
 
 

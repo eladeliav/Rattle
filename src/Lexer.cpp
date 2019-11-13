@@ -43,8 +43,17 @@ Token Lexer::getNextId()
         sResult += currentChar;
         advance();
     }
+
+    for(auto const& p : TYPE_CHARS)
+    {
+        std::regex reg(p.second);
+        if(std::regex_match(sResult, reg))
+        {
+            return Token(p.first, sResult);
+        }
+    }
+
     Token token(Token::IDENTIFIER, sResult);
-    std::cout << token << std::endl;
     return token;
 }
 
