@@ -54,8 +54,10 @@ BinOp* Parser::factor()
     else if(token.getType() == Token::MINUS)
     {
         eat(Token::MINUS);
-        auto* node = new BinOp(Token(factor()->key.getValue(), Token::INTEGER, Token::MINUS));
-        return node;
+        auto* nextFactor = factor();
+        if(nextFactor->key.getOp() == Token::MINUS)
+            return new BinOp(Token(nextFactor->key.getValue(), Token::INTEGER, Token::PLUS));
+        return new BinOp(Token(nextFactor->key.getValue(), Token::INTEGER, Token::MINUS));;
     }
     else if (token.getType() == Token::Type::INTEGER)
     {
