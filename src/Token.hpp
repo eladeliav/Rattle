@@ -11,6 +11,7 @@
 #include <unordered_set>
 
 #define INTEGER_REGEX "^[0-9]*$"
+#define FLOAT_REGEX "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$"
 #define PLUS_REGEX "[+]"
 #define MINUS_REGEX "[-]"
 #define MUL_REGEX "[*]"
@@ -29,6 +30,7 @@ public:
     enum Type
     {
         INTEGER,
+        FLOAT,
         PLUS,
         MINUS,
         MUL,
@@ -90,6 +92,7 @@ private:
 const std::map<Token::Type, std::string> TYPE_CHARS =
         {
                 {Token::Type::INTEGER,     INTEGER_REGEX},
+                {Token::Type::FLOAT,       FLOAT_REGEX},
                 {Token::Type::PLUS,        PLUS_REGEX},
                 {Token::Type::MINUS,       MINUS_REGEX},
                 {Token::Type::MUL,         MUL_REGEX},
@@ -105,7 +108,6 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
 const std::unordered_set<Token::Type> OPERATOR_TYPES = {
         Token::PLUS, Token::MINUS, Token::MUL, Token::DIV, Token::ASSIGN
 };
-
 
 
 #endif //RATTLE_TOKEN_HPP

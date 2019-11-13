@@ -24,7 +24,7 @@ void Lexer::skip_whitespaces()
         advance();
 }
 
-int Lexer::getNextInteger()
+Token Lexer::getNextNumber()
 {
     std::string sResult;
     while(currentChar != '\0' && std::isdigit(currentChar))
@@ -32,7 +32,20 @@ int Lexer::getNextInteger()
         sResult += currentChar;
         advance();
     }
-    return std::stoi(sResult);
+
+    if(currentChar == '.')
+    {
+        sResult += currentChar;
+        advance();
+        while(currentChar != '\0' && std::isdigit(currentChar))
+        {
+            sResult += currentChar;
+            advance();
+        }
+        return Token(Token::FLOAT, sResult);
+    }
+
+    return Token(Token::INTEGER, sResult);
 }
 
 Token Lexer::getNextId()
@@ -81,8 +94,8 @@ Token Lexer::getNextToken()
 
             if(std::regex_match(strChar, reg))
             {
-                if(r.first == Token::Type::INTEGER)
-                    return Token(r.first, std::to_string(getNextInteger()));
+                if(r.first == Token::Type::INTEGER || r.first == Token::Type::FLOAT)
+                    return getNextNumber();
                 advance();
                 return Token(r.first, strChar);
             }

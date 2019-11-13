@@ -79,7 +79,13 @@ BinNode *Parser::factor()
     {
         eat(Token::Type::INTEGER);
         return new BinNode(token);
-    } else if (token.getType() == Token::Type::LPAREN)
+    }
+    else if (token.getType() == Token::Type::FLOAT)
+    {
+        eat(Token::Type::FLOAT);
+        return new BinNode(token);
+    }
+    else if (token.getType() == Token::Type::LPAREN)
     {
         eat(Token::Type::LPAREN);
         BinNode *node = expr();

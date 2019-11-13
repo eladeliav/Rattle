@@ -53,19 +53,48 @@ std::string Interpreter::runTree(BinNode* tree)
                 return tree->key.getValue();
             else
                 return tree->key.getOp() == Token::PLUS ? tree->key.getValue() : std::to_string(-1 * std::stoi(tree->key.getValue()));
+        case Token::FLOAT:
+            if(tree->key.getOp() == Token::END_OF_LINE)
+                return tree->key.getValue();
+            else
+                return tree->key.getOp() == Token::PLUS ? tree->key.getValue() : std::to_string(-1 * std::stof(tree->key.getValue()));
         case Token::PLUS:
+            if(tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT)
+            {
+                float lValf = std::stof(runTree(tree->left));
+                float rValf = std::stof(runTree(tree->right));
+                return std::to_string(lValf + rValf);
+            }
             lVal = std::stoi(runTree(tree->left));
             rVal = std::stoi(runTree(tree->right));
             return std::to_string(lVal + rVal);
         case Token::MINUS:
+            if(tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT)
+            {
+                float lValf = std::stof(runTree(tree->left));
+                float rValf = std::stof(runTree(tree->right));
+                return std::to_string(lValf - rValf);
+            }
             lVal = std::stoi(runTree(tree->left));
             rVal = std::stoi(runTree(tree->right));
             return std::to_string(lVal - rVal);
         case Token::MUL:
+            if(tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT)
+            {
+                float lValf = std::stof(runTree(tree->left));
+                float rValf = std::stof(runTree(tree->right));
+                return std::to_string(lValf * rValf);
+            }
             lVal = std::stoi(runTree(tree->left));
             rVal = std::stoi(runTree(tree->right));
             return std::to_string(lVal * rVal);
         case Token::DIV:
+            if(tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT)
+            {
+                float lValf = std::stof(runTree(tree->left));
+                float rValf = std::stof(runTree(tree->right));
+                return std::to_string(lValf / rValf);
+            }
             lVal = std::stoi(runTree(tree->left));
             rVal = std::stoi(runTree(tree->right));
             return std::to_string(lVal / rVal);

@@ -25,7 +25,7 @@ public:
 
     void skip_whitespaces();
 
-    int getNextInteger();
+    Token getNextNumber();
 
     Token getNextToken();
 
