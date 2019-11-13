@@ -19,10 +19,10 @@ public:
     BinNode(BinNode *pNode)
     {
         key = Token(pNode->key);
-        if(pNode->left != nullptr)
-            left = new BinNode(pNode->left->key);
-        if(pNode->right != nullptr)
-            right = new BinNode(pNode->right->key);
+        if (pNode->left)
+            left = new BinNode(pNode->left);  // recursively call copy constructor
+        if (pNode->right)
+            right = new BinNode(pNode->right);  // recursively call copy constructor
     }
 
     Token key;     ///< The key of the BinOp
@@ -32,6 +32,8 @@ public:
     virtual ~BinNode()
     {
         std::cout << "destructor of binop" << std::endl;
+        delete left;
+        delete right;
     }
 
     /**
