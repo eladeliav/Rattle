@@ -47,6 +47,8 @@ Token Lexer::getNextId()
     for(auto const& p : TYPE_CHARS)
     {
         std::regex reg(p.second);
+        if(p.first == Token::IDENTIFIER)
+            continue;
         if(std::regex_match(sResult, reg))
         {
             return Token(p.first, sResult);

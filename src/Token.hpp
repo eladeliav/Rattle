@@ -20,7 +20,7 @@
 #define END_OF_LINE_REGEX "[\n]"
 #define IDENTIFIER_REGEX "[_a-zA-Z][_a-zA-Z0-9]{0,30}"
 #define ASSIGN_REGEX "[=]"
-#define PRINT_REGEX "(?:^|\\W)rocket(?:$|\\W)"
+#define PRINT_REGEX "(?:^|\\W)print(?:$|\\W)"
 
 class Token
 {
@@ -96,9 +96,9 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::Type::DIV,         DIV_REGEX},
                 {Token::Type::LPAREN,      LPAREN_REGEX},
                 {Token::Type::RPAREN,      RPAREN_REGEX},
+                {Token::PRINT,             PRINT_REGEX},
                 {Token::Type::END_OF_LINE, END_OF_LINE_REGEX},
                 {Token::ASSIGN,            ASSIGN_REGEX},
-                {Token::PRINT,             PRINT_REGEX},
                 {Token::IDENTIFIER,        IDENTIFIER_REGEX}
         };
 

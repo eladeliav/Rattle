@@ -24,7 +24,8 @@ BinNode *Parser::expr()
 {
     BinNode *node = term();
 
-    while (currentToken.getType() == Token::Type::PLUS || currentToken.getType() == Token::Type::MINUS || currentToken.getType() == Token::ASSIGN || currentToken.getType() == Token::PRINT)
+    while (currentToken.getType() == Token::Type::PLUS || currentToken.getType() == Token::Type::MINUS ||
+           currentToken.getType() == Token::PRINT)
     {
         Token token = currentToken;
         if (token.getType() == Token::Type::PLUS)
@@ -33,20 +34,29 @@ BinNode *Parser::expr()
         } else if (token.getType() == Token::Type::MINUS)
         {
             eat(Token::Type::MINUS);
-        }
-        else if (token.getType() == Token::ASSIGN)
+        } else if (token.getType() == Token::ASSIGN)
         {
             eat(Token::Type::ASSIGN);
-        }
-        else if (token.getType() == Token::PRINT)
+        } else if (token.getType() == Token::PRINT)
         {
             eat(Token::Type::PRINT);
         }
-        auto* tempNode = new BinNode(node);
+        auto *tempNode = new BinNode(node);
         node = new BinNode(token);
         node->left = tempNode;
         node->right = term();
     }
+
+    if (currentToken.getType() == Token::ASSIGN)
+    {
+        Token token = currentToken;
+        eat(Token::Type::ASSIGN);
+        auto *tempNode = new BinNode(node);
+        node = new BinNode(token);
+        node->left = tempNode;
+        node->right = expr();
+    }
+
     return node;
 }
 
@@ -83,6 +93,15 @@ BinNode *Parser::factor()
     {
         eat(Token::IDENTIFIER);
         return new BinNode(token);
+    } else if (token.getType() == Token::PRINT)
+    {
+        eat(Token::PRINT);
+        eat(Token::Type::LPAREN);
+        BinNode *e = expr();
+        eat(Token::Type::RPAREN);
+        auto *node = new BinNode(token);
+        node->right = e;
+        return node;
     }
 
     throw (std::runtime_error("error getting factor"));
@@ -102,7 +121,7 @@ BinNode *Parser::term()
         {
             eat(Token::Type::DIV);
         }
-        auto* tempNode = new BinNode(node);
+        auto *tempNode = new BinNode(node);
         node = new BinNode(token);
         node->left = tempNode;
         node->right = term();
