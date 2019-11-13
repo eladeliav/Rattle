@@ -7,7 +7,8 @@
 
 #include <iostream>
 #include <string>
-#include <unordered_map>
+#include <map>
+#include <unordered_set>
 
 #define INTEGER_REGEX "^[0-9]*$"
 #define PLUS_REGEX "[+]"
@@ -17,6 +18,8 @@
 #define LPAREN_REGEX "[(]"
 #define RPAREN_REGEX "[)]"
 #define END_OF_LINE_REGEX "[\n]"
+#define IDENTIFIER_REGEX "[_a-zA-Z][_a-zA-Z0-9]{0,30}"
+#define ASSIGN_REGEX "[=]"
 
 class Token
 {
@@ -31,6 +34,8 @@ public:
         DIV,
         LPAREN,
         RPAREN,
+        IDENTIFIER,
+        ASSIGN,
         END_OF_LINE
     };
 
@@ -65,7 +70,7 @@ private:
     Type op;
 };
 
-const std::unordered_map<Token::Type, std::string> TYPE_CHARS =
+const std::map<Token::Type, std::string> TYPE_CHARS =
         {
                 {Token::Type::INTEGER,     INTEGER_REGEX},
                 {Token::Type::PLUS,        PLUS_REGEX},
@@ -75,8 +80,14 @@ const std::unordered_map<Token::Type, std::string> TYPE_CHARS =
                 {Token::Type::LPAREN,      LPAREN_REGEX},
                 {Token::Type::RPAREN,      RPAREN_REGEX},
                 {Token::Type::END_OF_LINE, END_OF_LINE_REGEX},
+                {Token::ASSIGN, ASSIGN_REGEX},
+                {Token::IDENTIFIER, IDENTIFIER_REGEX}
 
         };
+
+const std::unordered_set<Token::Type> OPERATOR_TYPES = {
+        Token::PLUS, Token::MINUS, Token::MUL, Token::DIV
+};
 
 
 #endif //RATTLE_TOKEN_HPP

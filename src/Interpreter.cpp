@@ -7,7 +7,7 @@
 Interpreter::Interpreter(const Parser &parser) : parser(parser)
 {}
 
-void printBT(const std::string& prefix, const BinOp* node, bool isLeft)
+void printBT(const std::string& prefix, const BinNode* node, bool isLeft)
 {
     if( node != nullptr )
     {
@@ -24,19 +24,19 @@ void printBT(const std::string& prefix, const BinOp* node, bool isLeft)
     }
 }
 
-void printBT(const BinOp* node)
+void printBT(const BinNode* node)
 {
     printBT("", node, false);
 }
 
 std::string Interpreter::interpret()
 {
-    BinOp* tree = parser.parse();
+    BinNode* tree = parser.parse();
     printBT(tree);
     return runTree(tree);
 }
 
-std::string Interpreter::runTree(BinOp* tree)
+std::string Interpreter::runTree(BinNode* tree)
 {
     if(tree == nullptr)
         return "0";

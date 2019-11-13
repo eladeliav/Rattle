@@ -5,7 +5,7 @@
 #ifndef RATTLE_PARSER_HPP
 #define RATTLE_PARSER_HPP
 #include "Lexer.hpp"
-#include "BinOp.hpp"
+#include "BinNode.hpp"
 
 class Parser
 {
@@ -14,12 +14,12 @@ private:
     Token currentToken;
 public:
     explicit Parser(Lexer lex);
-    BinOp* parse();
+    BinNode* parse();
 private:
     void eat(Token::Type type);
-    BinOp* factor();
-    BinOp* term();
-    BinOp* expr();
+    BinNode* factor();
+    BinNode* term();
+    BinNode* expr();
 };
 
 

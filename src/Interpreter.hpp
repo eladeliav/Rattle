@@ -13,7 +13,7 @@ public:
     std::string interpret();
 private:
     Parser parser;
-    std::string runTree(BinOp* tree);
+    std::string runTree(BinNode* tree);
 };
 
 

@@ -20,10 +20,10 @@ Parser::Parser(Lexer lex) : lex(lex)
     currentToken = this->lex.getNextToken();
 }
 
-BinOp* Parser::expr()
+BinNode* Parser::expr()
 {
-    BinOp* node = term();
-    BinOp *newNode = nullptr;
+    BinNode* node = term();
+    BinNode *newNode = nullptr;
 
     while (currentToken.getType() == Token::Type::PLUS || currentToken.getType() == Token::Type::MINUS)
     {
@@ -35,20 +35,20 @@ BinOp* Parser::expr()
         {
             eat(Token::Type::MINUS);
         }
-        newNode = new BinOp(token);
+        newNode = new BinNode(token);
         newNode->left = node;
         newNode->right = term();
     }
     return newNode == nullptr ? node : newNode;
 }
 
-BinOp* Parser::factor()
+BinNode* Parser::factor()
 {
     Token token = currentToken;
     if(token.getType() == Token::PLUS)
     {
         eat(Token::PLUS);
-        auto* node = new BinOp(Token(factor()->key.getValue(), Token::INTEGER, Token::PLUS));
+        auto* node = new BinNode(Token(factor()->key.getValue(), Token::INTEGER, Token::PLUS));
         return node;
     }
     else if(token.getType() == Token::MINUS)
@@ -56,27 +56,37 @@ BinOp* Parser::factor()
         eat(Token::MINUS);
         auto* nextFactor = factor();
         if(nextFactor->key.getOp() == Token::MINUS)
-            return new BinOp(Token(nextFactor->key.getValue(), Token::INTEGER, Token::PLUS));
-        return new BinOp(Token(nextFactor->key.getValue(), Token::INTEGER, Token::MINUS));;
+            return new BinNode(Token(nextFactor->key.getValue(), Token::INTEGER, Token::PLUS));
+        return new BinNode(Token(nextFactor->key.getValue(), Token::INTEGER, Token::MINUS));;
     }
     else if (token.getType() == Token::Type::INTEGER)
     {
         eat(Token::Type::INTEGER);
-        return new BinOp(token);
+        return new BinNode(token);
     } else if (token.getType() == Token::Type::LPAREN)
     {
         eat(Token::Type::LPAREN);
-        BinOp* node = expr();
+        BinNode* node = expr();
         eat(Token::Type::RPAREN);
         return node;
     }
+    else if (token.getType() == Token::ASSIGN)
+    {
+        eat(Token::ASSIGN);
+        return new BinNode(token);
+    } else if (token.getType() == Token::IDENTIFIER)
+    {
+        eat(Token::IDENTIFIER);
+        return new BinNode(token);
+    }
+
     throw (std::runtime_error("error getting factor"));
 }
 
-BinOp* Parser::term()
+BinNode* Parser::term()
 {
-    BinOp* node = factor();
-    BinOp* newNode = nullptr;
+    BinNode* node = factor();
+    BinNode* newNode = nullptr;
 
     while (currentToken.getType() == Token::Type::MUL || currentToken.getType() == Token::Type::DIV)
     {
@@ -88,14 +98,14 @@ BinOp* Parser::term()
         {
             eat(Token::Type::DIV);
         }
-        newNode = new BinOp(token);
+        newNode = new BinNode(token);
         newNode->left = node;
         newNode->right = factor();
     }
     return newNode == nullptr ? node : newNode;
 }
 
-BinOp* Parser::parse()
+BinNode* Parser::parse()
 {
     return expr();
 }

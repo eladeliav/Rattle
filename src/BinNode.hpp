@@ -2,23 +2,23 @@
 // Created by elade on 11/12/2019.
 //
 
-#ifndef RATTLE_BINOP_HPP
-#define RATTLE_BINOP_HPP
+#ifndef RATTLE_BINNODE_HPP
+#define RATTLE_BINNODE_HPP
 
 #include <iostream>
 #include "Token.hpp"
 
 
-class BinOp {
+class BinNode {
 public:
-    BinOp()
+    BinNode()
     = default;
 
     Token key;     ///< The key of the BinOp
-    BinOp* left;    ///< The left child of the BinOp
-    BinOp* right;   ///< The right child of the BinOp
+    BinNode* left;    ///< The left child of the BinOp
+    BinNode* right;   ///< The right child of the BinOp
 
-    virtual ~BinOp()
+    virtual ~BinNode()
     {
         std::cout << "destructor of binop" << std::endl;
     }
@@ -26,11 +26,11 @@ public:
     /**
      * @brief Constructor of a binary search tree BinOp
      */
-    BinOp(const Token key) {
+    BinNode(const Token key) {
         this->key = key;
         this->left = nullptr;
         this->right = nullptr;
     }
 };
 
-#endif //RATTLE_BINOP_HPP
+#endif //RATTLE_BINNODE_HPP
