@@ -35,6 +35,19 @@ int Lexer::getNextInteger()
     return std::stoi(sResult);
 }
 
+Token Lexer::getNextId()
+{
+    std::string sResult;
+    while(currentChar != '\0' && std::isalnum(currentChar))
+    {
+        sResult += currentChar;
+        advance();
+    }
+    Token token(Token::IDENTIFIER, sResult);
+    std::cout << token << std::endl;
+    return token;
+}
+
 Token Lexer::getNextToken()
 {
     while(currentChar != '\0')
@@ -45,6 +58,10 @@ Token Lexer::getNextToken()
             continue;
         }
 
+        if(std::isalpha(currentChar))
+        {
+            return getNextId();
+        }
 
         for(const auto& r : TYPE_CHARS)
         {

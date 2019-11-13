@@ -28,6 +28,8 @@ public:
     int getNextInteger();
 
     Token getNextToken();
+
+    Token getNextId();
 };
 
 

@@ -49,6 +49,13 @@ public:
     Token(const std::string &value, Type type, Type op) : value(value), type(type), op(op)
     {}
 
+    Token(const Token& other)
+    {
+        value = other.value;
+        type = other.type;
+        op = other.op;
+    }
+
     const std::string &getValue() const
     {
         return value;
@@ -62,6 +69,12 @@ public:
     Type getOp() const
     {
         return op;
+    }
+
+    friend std::ostream &operator<<(std::ostream &os, const Token &token)
+    {
+        os << "{value: " << token.value << " type: " << token.type << " op: " << token.op << "}";
+        return os;
     }
 
 private:
@@ -80,13 +93,13 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::Type::LPAREN,      LPAREN_REGEX},
                 {Token::Type::RPAREN,      RPAREN_REGEX},
                 {Token::Type::END_OF_LINE, END_OF_LINE_REGEX},
-                {Token::ASSIGN, ASSIGN_REGEX},
-                {Token::IDENTIFIER, IDENTIFIER_REGEX}
+                {Token::ASSIGN,            ASSIGN_REGEX},
+                {Token::IDENTIFIER,        IDENTIFIER_REGEX}
 
         };
 
 const std::unordered_set<Token::Type> OPERATOR_TYPES = {
-        Token::PLUS, Token::MINUS, Token::MUL, Token::DIV
+        Token::PLUS, Token::MINUS, Token::MUL, Token::DIV, Token::ASSIGN
 };
 
 
