@@ -41,6 +41,10 @@ BinNode *Parser::expr()
         {
             eat(Token::Type::PRINT);
         }
+        else if (token.getType() == Token::PRINT_TYPE)
+        {
+            eat(Token::Type::PRINT_TYPE);
+        }
         auto *tempNode = new BinNode(node);
         node = new BinNode(token);
         node->left = tempNode;
@@ -102,6 +106,16 @@ BinNode *Parser::factor()
     } else if (token.getType() == Token::PRINT)
     {
         eat(Token::PRINT);
+        eat(Token::Type::LPAREN);
+        BinNode *e = expr();
+        eat(Token::Type::RPAREN);
+        auto *node = new BinNode(token);
+        node->right = e;
+        return node;
+    }
+    else if (token.getType() == Token::PRINT_TYPE)
+    {
+        eat(Token::PRINT_TYPE);
         eat(Token::Type::LPAREN);
         BinNode *e = expr();
         eat(Token::Type::RPAREN);

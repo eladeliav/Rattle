@@ -4,18 +4,26 @@
 
 #ifndef RATTLE_INTERPRETER_HPP
 #define RATTLE_INTERPRETER_HPP
+
 #include "Parser.hpp"
 #include <unordered_map>
+#include <functional>
 
 class Interpreter
 {
 public:
     Interpreter(const Parser &parser);
+
     std::string interpret();
+
 private:
     Parser parser;
-    std::string runTree(BinNode* tree);
-    static std::unordered_map<std::string, std::string> variables;
+
+    Token runTree(BinNode *tree);
+
+    static bool doAsFloat(BinNode *tree);
+
+    static std::unordered_map<std::string, Token> variables;
 };
 
 

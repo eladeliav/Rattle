@@ -4,7 +4,7 @@
 
 #include "Interpreter.hpp"
 
-std::unordered_map<std::string, std::string> Interpreter::variables;
+std::unordered_map<std::string, Token> Interpreter::variables;
 
 Interpreter::Interpreter(const Parser &parser) : parser(parser)
 {}
@@ -35,13 +35,13 @@ std::string Interpreter::interpret()
 {
     BinNode* tree = parser.parse();
     //printBT(tree);
-    return runTree(tree);
+    return runTree(tree).getValue();
 }
 
-std::string Interpreter::runTree(BinNode* tree)
+Token Interpreter::runTree(BinNode* tree)
 {
     if(tree == nullptr)
-        return "0";
+        return Token(Token::END_OF_LINE, "");
 
     int lVal = 0;
     int rVal = 0;
@@ -49,62 +49,64 @@ std::string Interpreter::runTree(BinNode* tree)
     switch(tree->key.getType())
     {
         case Token::INTEGER:
-            if(tree->key.getOp() == Token::END_OF_LINE)
-                return tree->key.getValue();
-            else
-                return tree->key.getOp() == Token::PLUS ? tree->key.getValue() : std::to_string(-1 * std::stoi(tree->key.getValue()));
+            if(tree->key.getOp() == Token::MINUS)
+            {
+                return Token(Token::INTEGER, std::to_string(std::stoi(tree->key.getValue()) * -1));
+            }
+            return tree->key;
         case Token::FLOAT:
-            if(tree->key.getOp() == Token::END_OF_LINE)
-                return tree->key.getValue();
-            else
-                return tree->key.getOp() == Token::PLUS ? tree->key.getValue() : std::to_string(-1 * std::stof(tree->key.getValue()));
+            if(tree->key.getOp() == Token::MINUS)
+            {
+                return Token(Token::FLOAT, std::to_string(std::stof(tree->key.getValue()) * -1.0));
+            }
+            return tree->key;
         case Token::PLUS:
-            if(tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT)
+            if(doAsFloat(tree))
             {
-                float lValf = std::stof(runTree(tree->left));
-                float rValf = std::stof(runTree(tree->right));
-                return std::to_string(lValf + rValf);
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                return Token(Token::FLOAT, std::to_string(lValf + rValf));
             }
-            lVal = std::stoi(runTree(tree->left));
-            rVal = std::stoi(runTree(tree->right));
-            return std::to_string(lVal + rVal);
+            lVal = std::stoi(runTree(tree->left).getValue());
+            rVal = std::stoi(runTree(tree->right).getValue());
+            return Token(Token::INTEGER, std::to_string(lVal + rVal));
         case Token::MINUS:
-            if(tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT)
+            if(doAsFloat(tree))
             {
-                float lValf = std::stof(runTree(tree->left));
-                float rValf = std::stof(runTree(tree->right));
-                return std::to_string(lValf - rValf);
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                return Token(Token::FLOAT, std::to_string(lValf - rValf));
             }
-            lVal = std::stoi(runTree(tree->left));
-            rVal = std::stoi(runTree(tree->right));
-            return std::to_string(lVal - rVal);
+            lVal = std::stoi(runTree(tree->left).getValue());
+            rVal = std::stoi(runTree(tree->right).getValue());
+            return Token(Token::INTEGER, std::to_string(lVal - rVal));
         case Token::MUL:
-            if(tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT)
+            if(doAsFloat(tree))
             {
-                float lValf = std::stof(runTree(tree->left));
-                float rValf = std::stof(runTree(tree->right));
-                return std::to_string(lValf * rValf);
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                return Token(Token::FLOAT, std::to_string(lValf * rValf));
             }
-            lVal = std::stoi(runTree(tree->left));
-            rVal = std::stoi(runTree(tree->right));
-            return std::to_string(lVal * rVal);
+            lVal = std::stoi(runTree(tree->left).getValue());
+            rVal = std::stoi(runTree(tree->right).getValue());
+            return Token(Token::INTEGER, std::to_string(lVal * rVal));
         case Token::DIV:
-            if(tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT)
+            if(doAsFloat(tree))
             {
-                float lValf = std::stof(runTree(tree->left));
-                float rValf = std::stof(runTree(tree->right));
-                return std::to_string(lValf / rValf);
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                return Token(Token::FLOAT, std::to_string(lValf / rValf));
             }
-            lVal = std::stoi(runTree(tree->left));
-            rVal = std::stoi(runTree(tree->right));
-            return std::to_string(lVal / rVal);
+            lVal = std::stoi(runTree(tree->left).getValue());
+            rVal = std::stoi(runTree(tree->right).getValue());
+            return Token(Token::INTEGER, std::to_string(lVal / rVal));
         case Token::ASSIGN:
         {
             std::string id = tree->left->key.getValue();
-            std::string val = runTree(tree->right);
-            if(variables.find(val) != variables.end())
+            Token val = runTree(tree->right);
+            if(variables.find(val.getValue()) != variables.end())
             {
-                variables[id] = variables[val];
+                variables[id] = variables[val.getValue()];
             }
             else
             {
@@ -119,7 +121,16 @@ std::string Interpreter::runTree(BinNode* tree)
         {
             return runTree(tree->right);
         }
+        case Token::PRINT_TYPE:
+            return Token(Token::END_OF_LINE, TYPE_TO_STRINGS.at(runTree(tree->right).getType()));
         default:
             throw(std::runtime_error("Invalid tree"));
     }
+}
+
+bool Interpreter::doAsFloat(BinNode *tree)
+{
+    return tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT ||
+           variables[tree->left->key.getValue()].getType() == Token::FLOAT ||
+           variables[tree->right->key.getValue()].getType() == Token::FLOAT;
 }

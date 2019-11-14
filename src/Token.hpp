@@ -22,6 +22,7 @@
 #define IDENTIFIER_REGEX "[_a-zA-Z][_a-zA-Z0-9]{0,30}"
 #define ASSIGN_REGEX "[=]"
 #define PRINT_REGEX "(?:^|\\W)print(?:$|\\W)"
+#define PRINT_TYPE_REGEX "(?:^|\\W)type(?:$|\\W)"
 
 class Token
 {
@@ -40,6 +41,7 @@ public:
         IDENTIFIER,
         ASSIGN,
         PRINT,
+        PRINT_TYPE,
         XOR,
         AND,
         END_OF_LINE
@@ -100,9 +102,16 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::Type::LPAREN,      LPAREN_REGEX},
                 {Token::Type::RPAREN,      RPAREN_REGEX},
                 {Token::PRINT,             PRINT_REGEX},
+                {Token::PRINT_TYPE, PRINT_TYPE_REGEX},
                 {Token::Type::END_OF_LINE, END_OF_LINE_REGEX},
                 {Token::ASSIGN,            ASSIGN_REGEX},
                 {Token::IDENTIFIER,        IDENTIFIER_REGEX}
+        };
+
+const std::map<Token::Type, std::string> TYPE_TO_STRINGS =
+        {
+                {Token::Type::INTEGER,     "int"},
+                {Token::Type::FLOAT,       "float"},
         };
 
 const std::unordered_set<Token::Type> OPERATOR_TYPES = {
