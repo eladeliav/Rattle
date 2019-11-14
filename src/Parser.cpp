@@ -28,23 +28,7 @@ BinNode *Parser::expr()
            currentToken.getType() == Token::PRINT)
     {
         Token token = currentToken;
-        if (token.getType() == Token::Type::PLUS)
-        {
-            eat(Token::Type::PLUS);
-        } else if (token.getType() == Token::Type::MINUS)
-        {
-            eat(Token::Type::MINUS);
-        } else if (token.getType() == Token::ASSIGN)
-        {
-            eat(Token::Type::ASSIGN);
-        } else if (token.getType() == Token::PRINT)
-        {
-            eat(Token::Type::PRINT);
-        }
-        else if (token.getType() == Token::PRINT_TYPE)
-        {
-            eat(Token::Type::PRINT_TYPE);
-        }
+        eat(token.getType());
         auto *tempNode = new BinNode(node);
         node = new BinNode(token);
         node->left = tempNode;
@@ -107,13 +91,7 @@ BinNode *Parser::term()
     while (currentToken.getType() == Token::Type::MUL || currentToken.getType() == Token::Type::DIV)
     {
         Token token = currentToken;
-        if (token.getType() == Token::Type::MUL)
-        {
-            eat(Token::Type::MUL);
-        } else if (token.getType() == Token::Type::DIV)
-        {
-            eat(Token::Type::DIV);
-        }
+        eat(token.getType());
         auto *tempNode = new BinNode(node);
         node = new BinNode(token);
         node->left = tempNode;
