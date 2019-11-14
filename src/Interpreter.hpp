@@ -23,6 +23,8 @@ private:
 
     static bool doAsFloat(BinNode *tree);
 
+    static bool doAsString(BinNode *tree);
+
     static std::unordered_map<std::string, Token> variables;
 };
 

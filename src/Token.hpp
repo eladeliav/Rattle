@@ -13,6 +13,7 @@
 
 #define INTEGER_REGEX "^[0-9]*$"
 #define FLOAT_REGEX "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$"
+#define STRING_REGEX "\"([^\\\"]|\\.)*\""
 #define PLUS_REGEX "[+]"
 #define MINUS_REGEX "[-]"
 #define MUL_REGEX "[*]"
@@ -33,6 +34,7 @@ public:
     {
         INTEGER,
         FLOAT,
+        STRING,
         PLUS,
         MINUS,
         MUL,
@@ -96,6 +98,7 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
         {
                 {Token::Type::INTEGER,     INTEGER_REGEX},
                 {Token::Type::FLOAT,       FLOAT_REGEX},
+                {Token::Type::STRING,      STRING_REGEX},
                 {Token::Type::PLUS,        PLUS_REGEX},
                 {Token::Type::MINUS,       MINUS_REGEX},
                 {Token::Type::MUL,         MUL_REGEX},
@@ -103,7 +106,7 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::Type::LPAREN,      LPAREN_REGEX},
                 {Token::Type::RPAREN,      RPAREN_REGEX},
                 {Token::PRINT,             PRINT_REGEX},
-                {Token::PRINT_TYPE, PRINT_TYPE_REGEX},
+                {Token::PRINT_TYPE,        PRINT_TYPE_REGEX},
                 {Token::Type::END_OF_LINE, END_OF_LINE_REGEX},
                 {Token::ASSIGN,            ASSIGN_REGEX},
                 {Token::IDENTIFIER,        IDENTIFIER_REGEX}
@@ -111,8 +114,9 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
 
 const std::map<Token::Type, std::string> TYPE_TO_STRINGS =
         {
-                {Token::Type::INTEGER,     "int"},
-                {Token::Type::FLOAT,       "float"},
+                {Token::Type::INTEGER, "int"},
+                {Token::Type::FLOAT,   "float"},
+                {Token::Type::STRING,  "string"}
         };
 
 const std::unordered_set<Token::Type> OPERATOR_TYPES = {

@@ -60,12 +60,20 @@ Token Interpreter::runTree(BinNode* tree)
                 return Token(std::to_string(std::stof(tree->key.getValue()) * -1.0), Token::FLOAT);
             }
             return tree->key;
+        case Token::STRING:
+            return tree->key;
         case Token::PLUS:
             if(doAsFloat(tree))
             {
                 float lValf = std::stof(runTree(tree->left).getValue());
                 float rValf = std::stof(runTree(tree->right).getValue());
                 return Token(std::to_string(lValf + rValf), Token::FLOAT);
+            }
+            else if(doAsString(tree))
+            {
+                std::string lVals = runTree(tree->left).getValue();
+                std::string rVals = runTree(tree->right).getValue();
+                return Token(lVals + rVals, Token::STRING);
             }
             lVal = std::stoi(runTree(tree->left).getValue());
             rVal = std::stoi(runTree(tree->right).getValue());
@@ -77,6 +85,10 @@ Token Interpreter::runTree(BinNode* tree)
                 float rValf = std::stof(runTree(tree->right).getValue());
                 return Token(std::to_string(lValf - rValf), Token::FLOAT);
             }
+            else if(doAsString(tree))
+            {
+                return Token("Cannot subtract strings", Token::END_OF_LINE);
+            }
             lVal = std::stoi(runTree(tree->left).getValue());
             rVal = std::stoi(runTree(tree->right).getValue());
             return Token(std::to_string(lVal - rVal), Token::INTEGER);
@@ -87,6 +99,10 @@ Token Interpreter::runTree(BinNode* tree)
                 float rValf = std::stof(runTree(tree->right).getValue());
                 return Token(std::to_string(lValf * rValf), Token::FLOAT);
             }
+            else if(doAsString(tree))
+            {
+                return Token("Cannot multiply strings", Token::END_OF_LINE);
+            }
             lVal = std::stoi(runTree(tree->left).getValue());
             rVal = std::stoi(runTree(tree->right).getValue());
             return Token(std::to_string(lVal * rVal), Token::INTEGER);
@@ -96,6 +112,10 @@ Token Interpreter::runTree(BinNode* tree)
                 float lValf = std::stof(runTree(tree->left).getValue());
                 float rValf = std::stof(runTree(tree->right).getValue());
                 return Token(std::to_string(lValf / rValf), Token::FLOAT);
+            }
+            else if(doAsString(tree))
+            {
+                return Token("Cannot divide strings", Token::END_OF_LINE);
             }
             lVal = std::stoi(runTree(tree->left).getValue());
             rVal = std::stoi(runTree(tree->right).getValue());
@@ -136,4 +156,11 @@ bool Interpreter::doAsFloat(BinNode *tree)
     return tree->left->key.getType() == Token::FLOAT || tree->right->key.getType() == Token::FLOAT ||
            variables[tree->left->key.getValue()].getType() == Token::FLOAT ||
            variables[tree->right->key.getValue()].getType() == Token::FLOAT;
+}
+
+bool Interpreter::doAsString(BinNode *tree)
+{
+    return tree->left->key.getType() == Token::STRING || tree->right->key.getType() == Token::STRING ||
+           variables[tree->left->key.getValue()].getType() == Token::STRING ||
+           variables[tree->right->key.getValue()].getType() == Token::STRING;
 }

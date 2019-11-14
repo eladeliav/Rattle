@@ -51,7 +51,8 @@ Token Lexer::getNextNumber()
 Token Lexer::getNextId()
 {
     std::string sResult;
-    while(currentChar != '\0' && std::isalnum(currentChar))
+
+    while((currentChar != '\0' && std::isalnum(currentChar)) || currentChar == '"')
     {
         sResult += currentChar;
         advance();
@@ -64,6 +65,11 @@ Token Lexer::getNextId()
             continue;
         if(std::regex_match(sResult, reg))
         {
+            if(p.first == Token::STRING)
+            {
+                sResult.erase(0, 1);
+                sResult.erase(sResult.size() - 1, 1);
+            }
             return Token(sResult, p.first);
         }
     }
@@ -82,7 +88,7 @@ Token Lexer::getNextToken()
             continue;
         }
 
-        if(std::isalpha(currentChar))
+        if(std::isalpha(currentChar) || currentChar == '"')
         {
             return getNextId();
         }
