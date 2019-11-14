@@ -10,6 +10,7 @@ int main(int argc, char** argv)
     {
         // got file, try to open
         std::ifstream ifs(argv[1]);
+        ifs >> std::noskipws;
         std::string line;
         while(std::getline(ifs, line))
         {

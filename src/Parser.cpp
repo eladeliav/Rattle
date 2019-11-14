@@ -35,7 +35,7 @@ BinNode *Parser::expr()
         node->right = term();
     }
 
-    if (currentToken.getType() == Token::ASSIGN || currentToken.getType() == Token::COMPARE_EQUAL)
+    if (currentToken.getType() == Token::ASSIGN || COMPARE_OPERATORS.find(currentToken.getType()) != COMPARE_OPERATORS.end())
     {
         Token token = currentToken;
         eat(token.getType());

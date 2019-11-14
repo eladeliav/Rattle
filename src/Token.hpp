@@ -150,7 +150,7 @@ const std::map<Token::Type, std::string> TYPE_TO_STRINGS =
         };
 
 const std::unordered_set<Token::Type> COMPARE_OPERATORS = {
-        Token::COMPARE_EQUAL
+        Token::COMPARE_EQUAL, Token::GREATER_THAN, Token::GREATER_THAN_EQUAL, Token::LESS_THAN, Token::LESS_THAN_EQUAL
 };
 
 

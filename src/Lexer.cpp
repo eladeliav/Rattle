@@ -12,7 +12,7 @@ Lexer::Lexer(const std::string &text) : text(text)
 void Lexer::advance()
 {
     this->pos++;
-    if((size_t) pos > text.size() - 1)
+    if ((size_t) pos > text.size() - 1)
         currentChar = '\0';
     else
         currentChar = text[pos];
@@ -21,7 +21,7 @@ void Lexer::advance()
 char Lexer::peek()
 {
     int newPos = pos + 1;
-    if((size_t) pos > text.size() - 1)
+    if ((size_t) pos > text.size() - 1)
         return '\0';
     else
         return text[newPos];
@@ -29,24 +29,24 @@ char Lexer::peek()
 
 void Lexer::skip_whitespaces()
 {
-    while(currentChar != '\0' && std::isspace(currentChar))
+    while (currentChar != '\0' && std::isspace(currentChar))
         advance();
 }
 
 Token Lexer::getNextNumber()
 {
     std::string sResult;
-    while(currentChar != '\0' && std::isdigit(currentChar))
+    while (currentChar != '\0' && std::isdigit(currentChar))
     {
         sResult += currentChar;
         advance();
     }
 
-    if(currentChar == '.')
+    if (currentChar == '.')
     {
         sResult += currentChar;
         advance();
-        while(currentChar != '\0' && std::isdigit(currentChar))
+        while (currentChar != '\0' && std::isdigit(currentChar))
         {
             sResult += currentChar;
             advance();
@@ -61,20 +61,20 @@ Token Lexer::getNextId()
 {
     std::string sResult;
 
-    while((currentChar != '\0' && std::isalnum(currentChar)) || currentChar == '"')
+    while ((currentChar != '\0' && std::isalnum(currentChar)) || currentChar == '"')
     {
         sResult += currentChar;
         advance();
     }
 
-    for(auto const& p : TYPE_CHARS)
+    for (auto const &p : TYPE_CHARS)
     {
         std::regex reg(p.second);
-        if(p.first == Token::IDENTIFIER)
+        if (p.first == Token::IDENTIFIER)
             continue;
-        if(std::regex_match(sResult, reg))
+        if (std::regex_match(sResult, reg))
         {
-            if(p.first == Token::STRING)
+            if (p.first == Token::STRING)
             {
                 sResult.erase(0, 1);
                 sResult.erase(sResult.size() - 1, 1);
@@ -89,58 +89,56 @@ Token Lexer::getNextId()
 
 Token Lexer::getNextToken()
 {
-    while(currentChar != '\0')
+    while (currentChar != '\0')
     {
-        if(std::isspace(currentChar))
+        if (std::isspace(currentChar))
         {
             skip_whitespaces();
             continue;
         }
 
-        if(currentChar == '"')
+        if (currentChar == '"')
         {
             std::string sResult;
-
-            while((currentChar != '\0' && std::isalnum(currentChar)) || std::isspace(currentChar) || currentChar == '"')
+            advance();
+            while (currentChar != '\0' && currentChar != '"')
             {
                 sResult += currentChar;
                 advance();
             }
-
-            sResult.erase(0, 1);
-            sResult.erase(sResult.size() - 1, 1);
+            advance();
 
             return Token(sResult, Token::STRING);
 
         }
 
-        if(std::isalpha(currentChar))
+        if (std::isalpha(currentChar))
         {
             return getNextId();
         }
 
-        if(currentChar == '=' && peek() == '=')
+        if (currentChar == '=' && peek() == '=')
         {
             advance();
             advance();
             return Token("==", Token::COMPARE_EQUAL);
         }
 
-        for(const auto& r : TYPE_CHARS)
+        for (const auto &r : TYPE_CHARS)
         {
             std::regex reg(r.second);
             std::string strChar(1, currentChar);
 
-            if(std::regex_match(strChar, reg))
+            if (std::regex_match(strChar, reg))
             {
-                if(r.first == Token::Type::INTEGER || r.first == Token::Type::FLOAT)
+                if (r.first == Token::Type::INTEGER || r.first == Token::Type::FLOAT)
                     return getNextNumber();
                 advance();
                 return Token(strChar, r.first);
             }
         }
 
-        throw(std::runtime_error("Parsing error"));
+        throw (std::runtime_error("Parsing error"));
 
     }
     return Token("\0", Token::Type::END_OF_LINE);
