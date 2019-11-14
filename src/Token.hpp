@@ -49,7 +49,7 @@ public:
 
     Token() = default;
 
-    Token(Type type, const std::string &value) : value(value), type(type)
+    Token(const std::string &value, Type type) : value(value), type(type)
     {
         op = END_OF_LINE;
     }

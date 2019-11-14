@@ -42,10 +42,10 @@ Token Lexer::getNextNumber()
             sResult += currentChar;
             advance();
         }
-        return Token(Token::FLOAT, sResult);
+        return Token(sResult, Token::FLOAT);
     }
 
-    return Token(Token::INTEGER, sResult);
+    return Token(sResult, Token::INTEGER);
 }
 
 Token Lexer::getNextId()
@@ -64,11 +64,11 @@ Token Lexer::getNextId()
             continue;
         if(std::regex_match(sResult, reg))
         {
-            return Token(p.first, sResult);
+            return Token(sResult, p.first);
         }
     }
 
-    Token token(Token::IDENTIFIER, sResult);
+    Token token(sResult, Token::IDENTIFIER);
     return token;
 }
 
@@ -97,12 +97,12 @@ Token Lexer::getNextToken()
                 if(r.first == Token::Type::INTEGER || r.first == Token::Type::FLOAT)
                     return getNextNumber();
                 advance();
-                return Token(r.first, strChar);
+                return Token(strChar, r.first);
             }
         }
 
         throw(std::runtime_error("Parsing error"));
 
     }
-    return Token(Token::Type::END_OF_LINE, "\0");
+    return Token("\0", Token::Type::END_OF_LINE);
 }
