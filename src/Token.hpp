@@ -20,11 +20,22 @@
 #define DIV_REGEX "[/]"
 #define LPAREN_REGEX "[(]"
 #define RPAREN_REGEX "[)]"
+#define LBRACE_REGEX "[{]"
+#define RBRACE_REGEX "[}]"
 #define END_OF_LINE_REGEX "[\n]"
 #define IDENTIFIER_REGEX "[_a-zA-Z][_a-zA-Z0-9]{0,30}"
 #define ASSIGN_REGEX "[=]"
+#define COMPARE_EQUAL_REGEX "=="
+#define LESS_THAN_REGEX "<"
+#define LESS_THAN_EQUAL_REGEX "<="
+#define GREATER_THAN_REGEX ">"
+#define GREATER_THAN_EQUAL_REGEX ">="
 #define PRINT_REGEX "(?:^|\\W)print(?:$|\\W)"
 #define PRINT_TYPE_REGEX "(?:^|\\W)type(?:$|\\W)"
+#define BOOL_REGEX "(?:^|\\W)true|false(?:$|\\W)"
+#define TRUE "true"
+#define FALSE "false"
+#define IF_REGEX "(?:^|\\W)if(?:$|\\W)"
 
 class Token
 {
@@ -35,14 +46,23 @@ public:
         INTEGER,
         FLOAT,
         STRING,
+        BOOL,
         PLUS,
         MINUS,
         MUL,
         DIV,
         LPAREN,
         RPAREN,
+        LBRACE,
+        RBRACE,
         IDENTIFIER,
+        IF,
         ASSIGN,
+        COMPARE_EQUAL,
+        LESS_THAN,
+        LESS_THAN_EQUAL,
+        GREATER_THAN,
+        GREATER_THAN_EQUAL,
         PRINT,
         PRINT_TYPE,
         XOR,
@@ -96,31 +116,41 @@ private:
 
 const std::map<Token::Type, std::string> TYPE_CHARS =
         {
-                {Token::Type::INTEGER,     INTEGER_REGEX},
-                {Token::Type::FLOAT,       FLOAT_REGEX},
-                {Token::Type::STRING,      STRING_REGEX},
-                {Token::Type::PLUS,        PLUS_REGEX},
-                {Token::Type::MINUS,       MINUS_REGEX},
-                {Token::Type::MUL,         MUL_REGEX},
-                {Token::Type::DIV,         DIV_REGEX},
-                {Token::Type::LPAREN,      LPAREN_REGEX},
-                {Token::Type::RPAREN,      RPAREN_REGEX},
-                {Token::PRINT,             PRINT_REGEX},
-                {Token::PRINT_TYPE,        PRINT_TYPE_REGEX},
-                {Token::Type::END_OF_LINE, END_OF_LINE_REGEX},
-                {Token::ASSIGN,            ASSIGN_REGEX},
-                {Token::IDENTIFIER,        IDENTIFIER_REGEX}
+                {Token::Type::INTEGER,      INTEGER_REGEX},
+                {Token::Type::FLOAT,        FLOAT_REGEX},
+                {Token::Type::STRING,       STRING_REGEX},
+                {Token::BOOL,               BOOL_REGEX},
+                {Token::Type::PLUS,         PLUS_REGEX},
+                {Token::Type::MINUS,        MINUS_REGEX},
+                {Token::Type::MUL,          MUL_REGEX},
+                {Token::IF,                 IF_REGEX},
+                {Token::Type::DIV,          DIV_REGEX},
+                {Token::Type::LPAREN,       LPAREN_REGEX},
+                {Token::Type::RPAREN,       RPAREN_REGEX},
+                {Token::Type::LBRACE,       LBRACE_REGEX},
+                {Token::Type::RBRACE,       RBRACE_REGEX},
+                {Token::PRINT,              PRINT_REGEX},
+                {Token::PRINT_TYPE,         PRINT_TYPE_REGEX},
+                {Token::Type::END_OF_LINE,  END_OF_LINE_REGEX},
+                {Token::COMPARE_EQUAL,      COMPARE_EQUAL_REGEX},
+                {Token::LESS_THAN,          LESS_THAN_REGEX},
+                {Token::LESS_THAN_EQUAL,    LESS_THAN_EQUAL_REGEX},
+                {Token::GREATER_THAN,       GREATER_THAN_REGEX},
+                {Token::GREATER_THAN_EQUAL, GREATER_THAN_EQUAL_REGEX},
+                {Token::ASSIGN,             ASSIGN_REGEX},
+                {Token::IDENTIFIER,         IDENTIFIER_REGEX}
         };
 
 const std::map<Token::Type, std::string> TYPE_TO_STRINGS =
         {
                 {Token::Type::INTEGER, "int"},
-                {Token::Type::FLOAT,   "float"},
-                {Token::Type::STRING,  "string"}
+                {Token::Type::FLOAT, "float"},
+                {Token::Type::STRING, "string"},
+                {Token::Type::BOOL, "bool"}
         };
 
-const std::unordered_set<Token::Type> OPERATOR_TYPES = {
-        Token::PLUS, Token::MINUS, Token::MUL, Token::DIV, Token::ASSIGN
+const std::unordered_set<Token::Type> COMPARE_OPERATORS = {
+        Token::COMPARE_EQUAL
 };
 
 

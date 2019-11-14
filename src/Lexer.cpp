@@ -18,6 +18,15 @@ void Lexer::advance()
         currentChar = text[pos];
 }
 
+char Lexer::peek()
+{
+    int newPos = pos + 1;
+    if((size_t) pos > text.size() - 1)
+        return '\0';
+    else
+        return text[newPos];
+}
+
 void Lexer::skip_whitespaces()
 {
     while(currentChar != '\0' && std::isspace(currentChar))
@@ -88,9 +97,33 @@ Token Lexer::getNextToken()
             continue;
         }
 
-        if(std::isalpha(currentChar) || currentChar == '"')
+        if(currentChar == '"')
+        {
+            std::string sResult;
+
+            while((currentChar != '\0' && std::isalnum(currentChar)) || std::isspace(currentChar) || currentChar == '"')
+            {
+                sResult += currentChar;
+                advance();
+            }
+
+            sResult.erase(0, 1);
+            sResult.erase(sResult.size() - 1, 1);
+
+            return Token(sResult, Token::STRING);
+
+        }
+
+        if(std::isalpha(currentChar))
         {
             return getNextId();
+        }
+
+        if(currentChar == '=' && peek() == '=')
+        {
+            advance();
+            advance();
+            return Token("==", Token::COMPARE_EQUAL);
         }
 
         for(const auto& r : TYPE_CHARS)

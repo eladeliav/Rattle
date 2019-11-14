@@ -23,6 +23,8 @@ public:
 
     void advance();
 
+    char peek();
+
     void skip_whitespaces();
 
     Token getNextNumber();

@@ -62,6 +62,8 @@ Token Interpreter::runTree(BinNode* tree)
             return tree->key;
         case Token::STRING:
             return tree->key;
+        case Token::BOOL:
+            return tree->key;
         case Token::PLUS:
             if(doAsFloat(tree))
             {
@@ -130,7 +132,6 @@ Token Interpreter::runTree(BinNode* tree)
             }
             else
             {
-
                 variables[id] = val;
             }
             return variables[id];
@@ -139,12 +140,156 @@ Token Interpreter::runTree(BinNode* tree)
             return variables.find(tree->key.getValue()) != variables.end() ? variables[tree->key.getValue()] : Token("Variable not found", Token::END_OF_LINE);
         case Token::PRINT:
         {
-            return runTree(tree->right);
+            Token val = runTree(tree->right);
+            std::cout << val.getValue() << std::endl;
+            return val;
         }
         case Token::PRINT_TYPE:
         {
             Token token = runTree(tree->right);
             return token.getType() == Token::END_OF_LINE ? token: Token(TYPE_TO_STRINGS.at(runTree(tree->right).getType()), Token::END_OF_LINE);
+        }
+        case Token::COMPARE_EQUAL:
+        {
+            if(doAsFloat(tree))
+            {
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                if(lValf == rValf)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            else if(doAsString(tree))
+            {
+                std::string lVals = runTree(tree->left).getValue();
+                std::string rVals = runTree(tree->right).getValue();
+                if(lVals == rVals)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            lVal = std::stoi(runTree(tree->left).getValue());
+            rVal = std::stoi(runTree(tree->right).getValue());
+            if(lVal == rVal)
+                return Token("true", Token::BOOL);
+            else
+                return Token("false", Token::BOOL);
+        }
+        case Token::LESS_THAN:
+        {
+            if(doAsFloat(tree))
+            {
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                if(lValf < rValf)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            else if(doAsString(tree))
+            {
+                std::string lVals = runTree(tree->left).getValue();
+                std::string rVals = runTree(tree->right).getValue();
+                if(lVals < rVals)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            lVal = std::stoi(runTree(tree->left).getValue());
+            rVal = std::stoi(runTree(tree->right).getValue());
+            if(lVal < rVal)
+                return Token("true", Token::BOOL);
+            else
+                return Token("false", Token::BOOL);
+        }
+        case Token::LESS_THAN_EQUAL:
+        {
+            if(doAsFloat(tree))
+            {
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                if(lValf <= rValf)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            else if(doAsString(tree))
+            {
+                std::string lVals = runTree(tree->left).getValue();
+                std::string rVals = runTree(tree->right).getValue();
+                if(lVals <= rVals)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            lVal = std::stoi(runTree(tree->left).getValue());
+            rVal = std::stoi(runTree(tree->right).getValue());
+            if(lVal <= rVal)
+                return Token("true", Token::BOOL);
+            else
+                return Token("false", Token::BOOL);
+        }
+        case Token::GREATER_THAN:
+        {
+            if(doAsFloat(tree))
+            {
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                if(lValf > rValf)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            else if(doAsString(tree))
+            {
+                std::string lVals = runTree(tree->left).getValue();
+                std::string rVals = runTree(tree->right).getValue();
+                if(lVals > rVals)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            lVal = std::stoi(runTree(tree->left).getValue());
+            rVal = std::stoi(runTree(tree->right).getValue());
+            if(lVal > rVal)
+                return Token("true", Token::BOOL);
+            else
+                return Token("false", Token::BOOL);
+        }
+        case Token::GREATER_THAN_EQUAL:
+        {
+            if(doAsFloat(tree))
+            {
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                if(lValf >= rValf)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            else if(doAsString(tree))
+            {
+                std::string lVals = runTree(tree->left).getValue();
+                std::string rVals = runTree(tree->right).getValue();
+                if(lVals >= rVals)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            lVal = std::stoi(runTree(tree->left).getValue());
+            rVal = std::stoi(runTree(tree->right).getValue());
+            if(lVal >= rVal)
+                return Token("true", Token::BOOL);
+            else
+                return Token("false", Token::BOOL);
+        }
+        case Token::IF:
+        {
+            Token conditionBool = runTree(tree->left);
+            if(conditionBool.getValue() == TRUE)
+                return runTree(tree->right);
+            return Token("", Token::END_OF_LINE);
         }
         default:
             throw(std::runtime_error("Invalid tree"));

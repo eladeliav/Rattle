@@ -35,10 +35,10 @@ BinNode *Parser::expr()
         node->right = term();
     }
 
-    if (currentToken.getType() == Token::ASSIGN)
+    if (currentToken.getType() == Token::ASSIGN || currentToken.getType() == Token::COMPARE_EQUAL)
     {
         Token token = currentToken;
-        eat(Token::Type::ASSIGN);
+        eat(token.getType());
         auto *tempNode = new BinNode(node);
         node = new BinNode(token);
         node->left = tempNode;
@@ -78,6 +78,18 @@ BinNode *Parser::factor()
         eat(Token::Type::RPAREN);
         auto *node = new BinNode(token);
         node->right = e;
+        return node;
+    }
+    else if(token.getType() == Token::IF)
+    {
+        eat(token.getType());
+        eat(Token::Type::LPAREN);
+        BinNode *condition = expr();
+        eat(Token::Type::RPAREN);
+        BinNode* ex = expr();
+        auto *node = new BinNode(token);
+        node->left = condition;
+        node->right = ex;
         return node;
     }
     eat(token.getType());
