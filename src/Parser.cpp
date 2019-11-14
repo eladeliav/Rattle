@@ -79,15 +79,6 @@ BinNode *Parser::factor()
         if (nextFactor->key.getOp() == Token::MINUS)
             return new BinNode(Token(nextFactor->key.getValue(), Token::INTEGER, Token::PLUS));
         return new BinNode(Token(nextFactor->key.getValue(), Token::INTEGER, Token::MINUS));;
-    } else if (token.getType() == Token::Type::INTEGER)
-    {
-        eat(Token::Type::INTEGER);
-        return new BinNode(token);
-    }
-    else if (token.getType() == Token::Type::FLOAT)
-    {
-        eat(Token::Type::FLOAT);
-        return new BinNode(token);
     }
     else if (token.getType() == Token::Type::LPAREN)
     {
@@ -95,14 +86,6 @@ BinNode *Parser::factor()
         BinNode *node = expr();
         eat(Token::Type::RPAREN);
         return node;
-    } else if (token.getType() == Token::ASSIGN)
-    {
-        eat(Token::ASSIGN);
-        return new BinNode(token);
-    } else if (token.getType() == Token::IDENTIFIER)
-    {
-        eat(Token::IDENTIFIER);
-        return new BinNode(token);
     } else if (token.getType() == Token::PRINT)
     {
         eat(Token::PRINT);
@@ -123,8 +106,8 @@ BinNode *Parser::factor()
         node->right = e;
         return node;
     }
-
-    throw (std::runtime_error("error getting factor"));
+    eat(token.getType());
+    return new BinNode(token);
 }
 
 BinNode *Parser::term()
