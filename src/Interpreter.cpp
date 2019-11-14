@@ -116,13 +116,16 @@ Token Interpreter::runTree(BinNode* tree)
             return variables[id];
         }
         case Token::IDENTIFIER:
-            return variables[tree->key.getValue()];
+            return variables.find(tree->key.getValue()) != variables.end() ? variables[tree->key.getValue()] : Token("Variable not found", Token::END_OF_LINE);
         case Token::PRINT:
         {
             return runTree(tree->right);
         }
         case Token::PRINT_TYPE:
-            return Token(TYPE_TO_STRINGS.at(runTree(tree->right).getType()), Token::END_OF_LINE);
+        {
+            Token token = runTree(tree->right);
+            return token.getType() == Token::END_OF_LINE ? token: Token(TYPE_TO_STRINGS.at(runTree(tree->right).getType()), Token::END_OF_LINE);
+        }
         default:
             throw(std::runtime_error("Invalid tree"));
     }

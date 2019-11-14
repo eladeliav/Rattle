@@ -9,6 +9,7 @@
 #include <string>
 #include <map>
 #include <unordered_set>
+#include <utility>
 
 #define INTEGER_REGEX "^[0-9]*$"
 #define FLOAT_REGEX "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$"
@@ -49,12 +50,12 @@ public:
 
     Token() = default;
 
-    Token(const std::string &value, Type type) : value(value), type(type)
+    Token(std::string value, Type type) : value(std::move(value)), type(type)
     {
         op = END_OF_LINE;
     }
 
-    Token(const std::string &value, Type type, Type op) : value(value), type(type), op(op)
+    Token(std::string value, Type type, Type op) : value(std::move(value)), type(type), op(op)
     {}
 
     Token(const Token &other)

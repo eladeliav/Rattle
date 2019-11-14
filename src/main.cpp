@@ -13,9 +13,6 @@ int main()
         if(input == "quit()" || input == "exit()")
             break;
 
-        if(input == "clear()")
-            std::cout << "\x1B[2J\x1B[H";
-
         Lexer lexer(input);
         Parser parser(lexer);
         Interpreter interpreter(parser);
