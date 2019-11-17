@@ -65,6 +65,7 @@ public:
         GREATER_THAN_EQUAL,
         PRINT,
         PRINT_TYPE,
+        BLOCK,
         XOR,
         AND,
         END_OF_LINE

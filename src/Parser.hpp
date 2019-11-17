@@ -6,6 +6,7 @@
 #define RATTLE_PARSER_HPP
 #include "Lexer.hpp"
 #include "BinNode.hpp"
+#include "BlockNode.hpp"
 #include <vector>
 
 class Parser

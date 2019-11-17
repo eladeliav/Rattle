@@ -16,7 +16,7 @@ public:
     = default;
 
 
-    BinNode(BinNode *pNode)
+    explicit BinNode(BinNode *pNode)
     {
         key = Token(pNode->key);
         if (pNode->left)
@@ -39,7 +39,7 @@ public:
     /**
      * @brief Constructor of a binary search tree BinOp
      */
-    BinNode(const Token key)
+    explicit BinNode(const Token& key)
     {
         this->key = Token(key);
     }
