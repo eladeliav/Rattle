@@ -22,6 +22,7 @@ int main(int argc, char** argv)
         Parser parser(lexer);
         Interpreter interpreter(parser);
         interpreter.interpret();
+        system("pause");
         exit(0);
     }
     while(true)
@@ -48,4 +49,5 @@ int main(int argc, char** argv)
         Interpreter interpreter(parser);
         std::cout << interpreter.interpret();
     }
+    system("pause");
 }
