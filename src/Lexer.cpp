@@ -131,6 +131,20 @@ Token Lexer::getNextToken()
             return Token("==", Token::COMPARE_EQUAL);
         }
 
+        if (currentChar == '&' && peek() == '&')
+        {
+            advance();
+            advance();
+            return Token("==", Token::IF_AND);
+        }
+
+        if (currentChar == '|' && peek() == '|')
+        {
+            advance();
+            advance();
+            return Token("==", Token::IF_OR);
+        }
+
         for (const auto &r : TYPE_CHARS)
         {
             std::regex reg(r.second);

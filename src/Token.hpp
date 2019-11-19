@@ -26,6 +26,8 @@
 #define IDENTIFIER_REGEX "[_a-zA-Z][_a-zA-Z0-9]{0,30}"
 #define ASSIGN_REGEX "[=]"
 #define COMPARE_EQUAL_REGEX "=="
+#define IF_AND_REGEX "&&"
+#define IF_OR_REGEX "||"
 #define LESS_THAN_REGEX "<"
 #define LESS_THAN_EQUAL_REGEX "<="
 #define GREATER_THAN_REGEX ">"
@@ -63,6 +65,8 @@ public:
         LESS_THAN_EQUAL,
         GREATER_THAN,
         GREATER_THAN_EQUAL,
+        IF_AND,
+        IF_OR,
         PRINT,
         PRINT_TYPE,
         BLOCK,
@@ -116,41 +120,51 @@ private:
 
 const std::map<Token::Type, std::string> TYPE_CHARS =
         {
-                {Token::Type::INTEGER,      INTEGER_REGEX},
-                {Token::Type::FLOAT,        FLOAT_REGEX},
-                {Token::Type::STRING,       STRING_REGEX},
-                {Token::BOOL,               BOOL_REGEX},
-                {Token::Type::PLUS,         PLUS_REGEX},
-                {Token::Type::MINUS,        MINUS_REGEX},
-                {Token::Type::MUL,          MUL_REGEX},
-                {Token::IF,                 IF_REGEX},
-                {Token::Type::DIV,          DIV_REGEX},
-                {Token::Type::LPAREN,       LPAREN_REGEX},
-                {Token::Type::RPAREN,       RPAREN_REGEX},
-                {Token::Type::LBRACE,       LBRACE_REGEX},
-                {Token::Type::RBRACE,       RBRACE_REGEX},
-                {Token::PRINT,              PRINT_REGEX},
-                {Token::PRINT_TYPE,         PRINT_TYPE_REGEX},
-                {Token::Type::END_OF_LINE,  END_OF_LINE_REGEX},
-                {Token::COMPARE_EQUAL,      COMPARE_EQUAL_REGEX},
-                {Token::LESS_THAN,          LESS_THAN_REGEX},
-                {Token::LESS_THAN_EQUAL,    LESS_THAN_EQUAL_REGEX},
-                {Token::GREATER_THAN,       GREATER_THAN_REGEX},
+                {Token::Type::INTEGER, INTEGER_REGEX},
+                {Token::Type::FLOAT, FLOAT_REGEX},
+                {Token::Type::STRING, STRING_REGEX},
+                {Token::BOOL, BOOL_REGEX},
+                {Token::Type::PLUS, PLUS_REGEX},
+                {Token::Type::MINUS, MINUS_REGEX},
+                {Token::Type::MUL, MUL_REGEX},
+                {Token::IF, IF_REGEX},
+                {Token::Type::DIV, DIV_REGEX},
+                {Token::Type::LPAREN, LPAREN_REGEX},
+                {Token::Type::RPAREN, RPAREN_REGEX},
+                {Token::Type::LBRACE, LBRACE_REGEX},
+                {Token::Type::RBRACE, RBRACE_REGEX},
+                {Token::PRINT, PRINT_REGEX},
+                {Token::PRINT_TYPE, PRINT_TYPE_REGEX},
+                {Token::Type::END_OF_LINE, END_OF_LINE_REGEX},
+                {Token::COMPARE_EQUAL, COMPARE_EQUAL_REGEX},
+                {Token::LESS_THAN, LESS_THAN_REGEX},
+                {Token::LESS_THAN_EQUAL, LESS_THAN_EQUAL_REGEX},
+                {Token::GREATER_THAN, GREATER_THAN_REGEX},
                 {Token::GREATER_THAN_EQUAL, GREATER_THAN_EQUAL_REGEX},
-                {Token::ASSIGN,             ASSIGN_REGEX},
-                {Token::IDENTIFIER,         IDENTIFIER_REGEX}
+                {Token::ASSIGN, ASSIGN_REGEX},
+                {Token::IDENTIFIER, IDENTIFIER_REGEX},
+                {Token::IF_AND, IF_AND_REGEX},
+                {Token::IF_OR, IF_OR_REGEX}
         };
 
 const std::map<Token::Type, std::string> TYPE_TO_STRINGS =
         {
                 {Token::Type::INTEGER, "int"},
-                {Token::Type::FLOAT, "float"},
-                {Token::Type::STRING, "string"},
-                {Token::Type::BOOL, "bool"}
+                {Token::Type::FLOAT,   "float"},
+                {Token::Type::STRING,  "string"},
+                {Token::Type::BOOL,    "bool"}
         };
 
 const std::unordered_set<Token::Type> COMPARE_OPERATORS = {
-        Token::COMPARE_EQUAL, Token::GREATER_THAN, Token::GREATER_THAN_EQUAL, Token::LESS_THAN, Token::LESS_THAN_EQUAL
+        Token::COMPARE_EQUAL, Token::GREATER_THAN, Token::GREATER_THAN_EQUAL, Token::LESS_THAN, Token::LESS_THAN_EQUAL, Token::IF_AND, Token::IF_OR
+};
+
+const std::unordered_set<Token::Type> LITERAL_TYPES = {
+        Token::INTEGER, Token::FLOAT, Token::STRING, Token::BOOL
+};
+
+const std::unordered_set<Token::Type> MATH_OPERATORS = {
+        Token::PLUS, Token::MINUS, Token::DIV, Token::MUL
 };
 
 

@@ -21,6 +21,10 @@ private:
 
     Token runTree(BinNode *tree);
 
+    Token doMathOperator(BinNode* tree);
+
+    Token doCompareOperator(BinNode* tree);
+
     static bool doAsFloat(BinNode *tree);
 
     static bool doAsString(BinNode *tree);
