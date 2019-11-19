@@ -9,6 +9,8 @@ std::unordered_map<std::string, Token> Interpreter::variables;
 Interpreter::Interpreter(const Parser &parser) : parser(parser)
 {}
 
+void printBT(const BinNode *node);
+
 void printBT(const std::string &prefix, const BinNode *node, bool isLeft)
 {
     if (node != nullptr)
@@ -18,7 +20,14 @@ void printBT(const std::string &prefix, const BinNode *node, bool isLeft)
         std::cout << (isLeft ? "|--" : "\\-- ");
 
         // print the value of the node
-        std::cout << node->key.getValue() << std::endl;
+        if(node->key.getType() == Token::BLOCK)
+        {
+            BlockNode* c = (BlockNode*)node;
+            for(BinNode* p : c->block)
+                printBT(p);
+        }
+        else
+            std::cout << node->key.getValue() << std::endl;
 
         // enter the next tree level - left and right branch
         printBT(prefix + (isLeft ? "|   " : "    "), node->left, true);
@@ -28,13 +37,18 @@ void printBT(const std::string &prefix, const BinNode *node, bool isLeft)
 
 void printBT(const BinNode *node)
 {
-    printBT("", node, false);
+    auto* ptr = node;
+    while (ptr != nullptr && ptr->key.getType() != Token::END_OF_FILE)
+    {
+        printBT("", ptr, false);
+        ptr = ptr->nextLine;
+    }
 }
 
 std::string Interpreter::interpret()
 {
     BinNode *tree = parser.parse();
-    //printBT(tree);
+    printBT(tree);
     auto *ptr = tree;
     while (ptr != nullptr && ptr->key.getType() != Token::END_OF_FILE)
     {
