@@ -1,21 +1,51 @@
-#include "lexer/Lexer.hpp"
 #include <iostream>
-#include <map>
-using namespace Lexer;
-int main()
-{
-    std::map<Token::Type, std::string> m{
-            {Token::Type::KEYWORD, "Keyword"},
-            {Token::Type::WHITESPACE, "Whitespace"},
-            {Token::Type::LITERAL, "Literal"},
-            {Token::Type::OPERATOR, "Operator"},
-            {Token::Type::IDENTIFIER, "Identifier"},
-            {Token::Type::DELIMINATOR, "Deliminator"}
-    };
-    auto vec = Lexer::tokenize("code.txt");
+#include "Lexer.hpp"
+#include "Parser.hpp"
+#include "Interpreter.hpp"
+#include <fstream>
 
-    for(Token x : vec)
+int main(int argc, char** argv)
+{
+    if(argc == 2)
     {
-        std::cout << x.getValue() << "->" << m.find(x.getTokenType())->second << std::endl;
+        // got file, try to open
+        std::ifstream ifs(argv[1]);
+        ifs >> std::noskipws;
+        std::string line;
+        std::string prog;
+        while(std::getline(ifs, line))
+        {
+            prog+=line + "\n";
+
+        }
+        Lexer lexer(prog);
+        Parser parser(lexer);
+        Interpreter interpreter(parser);
+        interpreter.interpret();
+        exit(0);
+    }
+    while(true)
+    {
+        std::string input;
+        std::getline(std::cin, input);
+
+        if(input.rfind('{') != std::string::npos)
+        {
+            while(input.rfind('}') == std::string::npos)
+            {
+                std::cout << "\r....";
+                std::string more;
+                std::getline(std::cin, more);
+                input += "\n" + more;
+            }
+        }
+
+        if(input == "quit()" || input == "exit()")
+            exit(0);
+
+        Lexer lexer(input);
+        Parser parser(lexer);
+        Interpreter interpreter(parser);
+        std::cout << interpreter.interpret();
     }
 }
