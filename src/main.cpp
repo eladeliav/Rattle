@@ -29,12 +29,23 @@ int main(int argc, char** argv)
         std::string input;
         std::getline(std::cin, input);
 
+        if(input.rfind('{') != std::string::npos)
+        {
+            while(input.rfind('}') == std::string::npos)
+            {
+                std::cout << "\r....";
+                std::string more;
+                std::getline(std::cin, more);
+                input += "\n" + more;
+            }
+        }
+
         if(input == "quit()" || input == "exit()")
             exit(0);
 
         Lexer lexer(input);
         Parser parser(lexer);
         Interpreter interpreter(parser);
-        std::cout << interpreter.interpret() << std::endl;
+        std::cout << interpreter.interpret();
     }
 }
