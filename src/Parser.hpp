@@ -22,6 +22,7 @@ private:
     BinNode* factor();
     BinNode* term();
     BinNode* expr();
+    BlockNode* getBlock();
 };
 
 

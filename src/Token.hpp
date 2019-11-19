@@ -66,8 +66,7 @@ public:
         PRINT,
         PRINT_TYPE,
         BLOCK,
-        XOR,
-        AND,
+        END_OF_FILE,
         END_OF_LINE
     };
 

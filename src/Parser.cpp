@@ -86,14 +86,32 @@ BinNode *Parser::factor()
         eat(Token::Type::LPAREN);
         BinNode *condition = expr();
         eat(Token::Type::RPAREN);
-        BinNode* ex = expr();
-        auto *node = new BinNode(token);
+        eat(currentToken.getType());
+        eat(currentToken.getType());
+        BlockNode* blockNode = getBlock();
+        auto* node = new BinNode(Token("if", Token::IF));
         node->left = condition;
-        node->right = ex;
+        node->right = blockNode;
         return node;
     }
     eat(token.getType());
     return new BinNode(token);
+}
+
+
+BlockNode *Parser::getBlock()
+{
+    auto* blockNode = new BlockNode(Token("", Token::BLOCK));
+
+    while(currentToken.getType() != Token::RBRACE)
+    {
+        blockNode->block.push_back(expr());
+        if(currentToken.getType() == Token::END_OF_LINE)
+            eat(Token::END_OF_LINE);
+    }
+    if(currentToken.getType() == Token::RBRACE)
+        eat(Token::RBRACE);
+    return blockNode;
 }
 
 BinNode *Parser::term()
@@ -114,5 +132,14 @@ BinNode *Parser::term()
 
 BinNode *Parser::parse()
 {
-    return expr();
+    auto* node = expr();
+    auto* ptr = node;
+    while (currentToken.getType() != Token::END_OF_FILE)
+    {
+        if(currentToken.getType() == Token::END_OF_LINE)
+            eat(Token::END_OF_LINE);
+        ptr->nextLine = expr();
+        ptr = ptr->nextLine;
+    }
+    return node;
 }

@@ -91,6 +91,13 @@ Token Lexer::getNextToken()
 {
     while (currentChar != '\0')
     {
+
+        if(currentChar == '\n')
+        {
+            advance();
+            return Token("\\n", Token::END_OF_LINE);
+        }
+
         if (std::isspace(currentChar))
         {
             skip_whitespaces();
@@ -141,5 +148,5 @@ Token Lexer::getNextToken()
         throw (std::runtime_error("Parsing error"));
 
     }
-    return Token("\0", Token::Type::END_OF_LINE);
+    return Token("\0", Token::Type::END_OF_FILE);
 }

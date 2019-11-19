@@ -12,16 +12,16 @@ int main(int argc, char** argv)
         std::ifstream ifs(argv[1]);
         ifs >> std::noskipws;
         std::string line;
+        std::string prog;
         while(std::getline(ifs, line))
         {
-            if(line == "quit()" || line == "exit()")
-                exit(0);
+            prog+=line + "\n";
 
-            Lexer lexer(line);
-            Parser parser(lexer);
-            Interpreter interpreter(parser);
-            interpreter.interpret();
         }
+        Lexer lexer(prog);
+        Parser parser(lexer);
+        Interpreter interpreter(parser);
+        interpreter.interpret();
         exit(0);
     }
     while(true)

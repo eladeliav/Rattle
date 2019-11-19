@@ -28,12 +28,14 @@ public:
     Token key;     ///< The key of the BinOp
     BinNode *left = nullptr;    ///< The left child of the BinOp
     BinNode *right = nullptr;   ///< The right child of the BinOp
+    BinNode* nextLine = nullptr;
 
     virtual ~BinNode()
     {
         std::cout << "destructor of binop" << std::endl;
         delete left;
         delete right;
+        delete nextLine;
     }
 
     /**
@@ -42,12 +44,6 @@ public:
     explicit BinNode(const Token& key)
     {
         this->key = Token(key);
-    }
-
-    friend std::ostream &operator<<(std::ostream &os, const BinNode &node)
-    {
-        os << "key: " << node.key << " left: " << node.left << " right: " << node.right;
-        return os;
     }
 
 

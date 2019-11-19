@@ -35,7 +35,13 @@ std::string Interpreter::interpret()
 {
     BinNode *tree = parser.parse();
     //printBT(tree);
-    return runTree(tree).getValue();
+    auto* ptr = tree;
+    while(ptr->key.getType() != Token::END_OF_FILE)
+    {
+        runTree(ptr);
+        ptr = ptr->nextLine;
+    }
+    return "";
 }
 
 Token Interpreter::runTree(BinNode *tree)
@@ -285,6 +291,23 @@ Token Interpreter::runTree(BinNode *tree)
             Token conditionBool = runTree(tree->left);
             if (conditionBool.getValue() == TRUE)
                 return runTree(tree->right);
+            return Token("", Token::END_OF_LINE);
+        }
+        case Token::BLOCK:
+        {
+            auto* ca = (BlockNode*)tree;
+            for(BinNode* currentExpr : ca->block)
+            {
+                runTree(currentExpr);
+            }
+            return Token("", Token::END_OF_LINE);
+        }
+        case Token::END_OF_FILE:
+        {
+            return Token("", Token::END_OF_FILE);
+        }
+        case Token::END_OF_LINE:
+        {
             return Token("", Token::END_OF_LINE);
         }
         default:
