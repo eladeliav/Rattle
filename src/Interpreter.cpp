@@ -271,6 +271,17 @@ Token Interpreter::doCompareOperator(BinNode *tree)
                 return runTree(tree->right);
 
             auto* ifNode = (IfNode*)tree;
+
+            if(!ifNode->elseIfs.empty())
+            {
+                for(BinNode* elIf : ifNode->elseIfs)
+                {
+                    conditionBool = runTree(elIf->left);
+                    if (conditionBool.getValue() == TRUE)
+                        return runTree(elIf->right);
+                }
+            }
+
             if(ifNode->elseBlock != nullptr)
                 return runTree(ifNode->elseBlock);
             return Token("", Token::END_OF_LINE);

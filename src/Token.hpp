@@ -38,6 +38,7 @@
 #define PRINT_TYPE_REGEX "(?:^|\\W)type(?:$|\\W)"
 #define BOOL_REGEX "(?:^|\\W)true|false(?:$|\\W)"
 #define ELSE_REGEX "(?:^|\\W)else(?:$|\\W)"
+#define ELIF_REGEX "(?:^|\\W)elif(?:$|\\W)"
 #define TRUE "true"
 #define FALSE "false"
 #define IF_REGEX "(?:^|\\W)if(?:$|\\W)"
@@ -63,6 +64,7 @@ public:
         IDENTIFIER,
         IF,
         ELSE,
+        ELIF,
         ASSIGN,
         COMPARE_EQUAL,
         COMPARE_NOT_EQUAL,
@@ -140,6 +142,7 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::Type::MUL, MUL_REGEX},
                 {Token::IF, IF_REGEX},
                 {Token::ELSE, ELSE_REGEX},
+                {Token::ELIF, ELIF_REGEX},
                 {Token::Type::DIV, DIV_REGEX},
                 {Token::Type::LPAREN, LPAREN_REGEX},
                 {Token::Type::RPAREN, RPAREN_REGEX},

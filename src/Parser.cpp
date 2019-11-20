@@ -95,6 +95,21 @@ BinNode *Parser::factor()
         lastIf = node;
         return node;
     }
+    else if(token.getType() == Token::ELIF)
+    {
+        eat(token.getType());
+        eat(Token::Type::LPAREN);
+        BinNode *condition = expr();
+        eat(Token::Type::RPAREN);
+        eat(currentToken.getType());
+        eat(currentToken.getType());
+        BlockNode* blockNode = getBlock();
+        auto* node = new IfNode(Token("if", Token::IF));
+        node->left = condition;
+        node->right = blockNode;
+        lastIf->elseIfs.push_back(node);
+        return new BinNode();
+    }
     else if(token.getType() == Token::ELSE)
     {
         eat(token.getType());
