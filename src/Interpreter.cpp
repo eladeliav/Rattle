@@ -48,7 +48,7 @@ void printBT(const BinNode *node)
 std::string Interpreter::interpret()
 {
     BinNode *tree = parser.parse();
-    printBT(tree);
+    //printBT(tree);
     auto *ptr = tree;
     while (ptr != nullptr && ptr->key.getType() != Token::END_OF_FILE)
     {
