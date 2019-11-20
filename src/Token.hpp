@@ -39,6 +39,7 @@
 #define BOOL_REGEX "(?:^|\\W)true|false(?:$|\\W)"
 #define ELSE_REGEX "(?:^|\\W)else(?:$|\\W)"
 #define ELIF_REGEX "(?:^|\\W)else if(?:$|\\W)"
+#define INPUT_REGEX "(?:^|\\W)input(?:$|\\W)"
 #define TRUE "true"
 #define FALSE "false"
 #define IF_REGEX "(?:^|\\W)if(?:$|\\W)"
@@ -65,6 +66,7 @@ public:
         IF,
         ELSE,
         ELIF,
+        INPUT,
         ASSIGN,
         COMPARE_EQUAL,
         COMPARE_NOT_EQUAL,
@@ -114,9 +116,9 @@ public:
         return op;
     }
 
-    void setOp(Type op)
+    void setType(Type type)
     {
-        Token::op = op;
+        Token::type = type;
     }
 
     friend std::ostream &operator<<(std::ostream &os, const Token &token)
@@ -143,6 +145,7 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::IF, IF_REGEX},
                 {Token::ELSE, ELSE_REGEX},
                 {Token::ELIF, ELIF_REGEX},
+                {Token::INPUT, INPUT_REGEX},
                 {Token::Type::DIV, DIV_REGEX},
                 {Token::Type::LPAREN, LPAREN_REGEX},
                 {Token::Type::RPAREN, RPAREN_REGEX},

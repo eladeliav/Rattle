@@ -108,6 +108,20 @@ Token Interpreter::runTree(BinNode *tree)
             std::cout << val.getValue() << std::endl;
             return val;
         }
+        case Token::INPUT:
+        {
+            Token val = runTree(tree->right);
+            std::cout << val.getValue() << std::endl;
+            std::string input;
+            std::cin >> input;
+            Lexer tempLex(input);
+            Token t = tempLex.getNextToken();
+            if(variables.find(t.getValue()) == variables.end())
+            {
+                t.setType(Token::STRING);
+            }
+            return t;
+        }
         case Token::PRINT_TYPE:
         {
             Token token = runTree(tree->right);
