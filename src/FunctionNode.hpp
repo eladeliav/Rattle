@@ -17,7 +17,7 @@ public:
     {
     }
 
-    std::vector<Token> localScope;
+    std::vector<BinNode*> localScope;
 
 };
 

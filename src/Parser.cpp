@@ -67,8 +67,7 @@ BinNode *Parser::factor()
         auto* funcNode = new FunctionNode(token);
         while(currentToken.getType() != Token::RPAREN)
         {
-            funcNode->localScope.push_back(currentToken);
-            eat(currentToken.getType());
+            funcNode->localScope.push_back(expr());
             if(currentToken.getType() == Token::COMMA)
                 eat(Token::COMMA);
         }
@@ -167,7 +166,7 @@ BinNode *Parser::factor()
             if(currentToken.getType() != Token::IDENTIFIER)
                 throw std::runtime_error("Expected identifier token");
 
-            funcNode->localScope.push_back(currentToken);
+            funcNode->localScope.push_back(new BinNode(currentToken));
             eat(currentToken.getType());
             if(currentToken.getType() == Token::COMMA)
                 eat(Token::COMMA);

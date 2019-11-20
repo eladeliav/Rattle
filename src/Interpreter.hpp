@@ -8,6 +8,7 @@
 #include "Parser.hpp"
 #include <unordered_map>
 #include <functional>
+#include <stack>
 
 class Interpreter
 {
@@ -31,6 +32,7 @@ private:
 
     static std::unordered_map<std::string, Token> variables;
     static std::unordered_map<std::string, Token> currentScope;
+    static std::stack<std::unordered_map<std::string, Token>> scopes;
     static std::unordered_map<std::string, FunctionNode*> functions;
 };
 

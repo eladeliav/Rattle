@@ -17,7 +17,7 @@ public:
     }
 
     std::vector<BinNode*> elseIfs;
-    BlockNode* elseBlock;
+    BlockNode* elseBlock = nullptr;
 
 };
 

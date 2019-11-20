@@ -6,6 +6,7 @@
 
 std::unordered_map<std::string, Token> Interpreter::variables;
 std::unordered_map<std::string, Token> Interpreter::currentScope;
+std::stack<std::unordered_map<std::string, Token>> Interpreter::scopes;
 std::unordered_map<std::string, FunctionNode*> Interpreter::functions;
 
 Interpreter::Interpreter(const Parser &parser) : parser(parser)
@@ -132,13 +133,15 @@ Token Interpreter::runTree(BinNode *tree)
                 if(funcCast->localScope.size() != funcToRun->localScope.size())
                     throw std::runtime_error("Wrong number of arguments to function: " + funcToRun->key.getValue() +
                     ", Expected: " + std::to_string(funcToRun->localScope.size()) + ", Got: " + std::to_string(funcCast->localScope.size()));
+                scopes.push(currentScope);
                 for(size_t i = 0; i < funcToRun->localScope.size();i++)
                 {
-                    Token afterRun = runTree(new BinNode(funcCast->localScope.at(i)));
-                    currentScope.insert({funcToRun->localScope.at(i).getValue(), afterRun});
+                    Token afterRun = runTree(funcCast->localScope.at(i));
+                    currentScope[funcToRun->localScope.at(i)->key.getValue()] =  afterRun;
                 }
                 Token returnToken = runTree(funcToRun->left);
-                currentScope.clear();
+                currentScope = scopes.top();
+                scopes.pop();
                 return returnToken;
             }
             if(currentScope.find(tree->key.getValue()) != currentScope.end())
