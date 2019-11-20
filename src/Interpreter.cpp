@@ -5,6 +5,8 @@
 #include "Interpreter.hpp"
 
 std::unordered_map<std::string, Token> Interpreter::variables;
+std::unordered_map<std::string, Token> Interpreter::currentScope;
+std::unordered_map<std::string, FunctionNode*> Interpreter::functions;
 
 Interpreter::Interpreter(const Parser &parser) : parser(parser)
 {}
@@ -97,10 +99,61 @@ Token Interpreter::runTree(BinNode *tree)
 
     switch (type)
     {
+        case Token::IF:
+        {
+            Token conditionBool = runTree(tree->left);
+            if (conditionBool.getValue() == TRUE)
+                return runTree(tree->right);
+
+            auto* ifNode = (IfNode*)tree;
+
+            if(!ifNode->elseIfs.empty())
+            {
+                for(BinNode* elIf : ifNode->elseIfs)
+                {
+                    conditionBool = runTree(elIf->left);
+                    if (conditionBool.getValue() == TRUE)
+                        return runTree(elIf->right);
+                }
+            }
+
+            if(ifNode->elseBlock != nullptr)
+                return runTree(ifNode->elseBlock);
+            return Token("", Token::END_OF_LINE);
+        }
         case Token::IDENTIFIER:
         {
+            if(auto* funcCast = dynamic_cast<FunctionNode*>(tree))
+            {
+                if(functions.find(funcCast->key.getValue()) == functions.end())
+                    return Token("Function not found", Token::END_OF_LINE);
+                // needs to run function
+                FunctionNode* funcToRun = functions[funcCast->key.getValue()];
+                if(funcCast->localScope.size() != funcToRun->localScope.size())
+                    throw std::runtime_error("Wrong number of arguments to function: " + funcToRun->key.getValue() +
+                    ", Expected: " + std::to_string(funcToRun->localScope.size()) + ", Got: " + std::to_string(funcCast->localScope.size()));
+                for(size_t i = 0; i < funcToRun->localScope.size();i++)
+                {
+                    Token afterRun = runTree(new BinNode(funcCast->localScope.at(i)));
+                    currentScope.insert({funcToRun->localScope.at(i).getValue(), afterRun});
+                }
+                Token returnToken = runTree(funcToRun->left);
+                currentScope.clear();
+                return returnToken;
+            }
+            if(currentScope.find(tree->key.getValue()) != currentScope.end())
+                return runTree(new BinNode(currentScope[tree->key.getValue()]));
             return variables.find(tree->key.getValue()) != variables.end() ? variables[tree->key.getValue()] : Token(
                     "Variable not found", Token::END_OF_LINE);
+        }
+        case Token::DEF:
+        {
+            if(functions.find(tree->key.getValue()) != functions.end())
+                throw std::runtime_error("Function redefined");
+
+            auto* funcCast = (FunctionNode*)tree;
+            functions[tree->key.getValue()] = funcCast;
+            return Token("", Token::END_OF_LINE);
         }
         case Token::PRINT:
         {
@@ -116,10 +169,9 @@ Token Interpreter::runTree(BinNode *tree)
             std::cin >> input;
             Lexer tempLex(input);
             Token t = tempLex.getNextToken();
-            if(variables.find(t.getValue()) == variables.end())
-            {
+            //TODO: Return stuff only as string, add cast to types
+            if(t.getType() != Token::INTEGER && t.getType() != Token::FLOAT && t.getType() != Token::BOOL)
                 t.setType(Token::STRING);
-            }
             return t;
         }
         case Token::PRINT_TYPE:
@@ -128,14 +180,26 @@ Token Interpreter::runTree(BinNode *tree)
             return token.getType() == Token::END_OF_LINE ? token : Token(
                     TYPE_TO_STRINGS.at(runTree(tree->right).getType()), Token::END_OF_LINE);
         }
+        case Token::RETURN:
+        {
+            return runTree(tree->right);
+        }
         case Token::BLOCK:
         {
             auto *ca = (BlockNode *) tree;
+            Token t = Token("", Token::END_OF_LINE);
             for (BinNode *currentExpr : ca->block)
             {
-                runTree(currentExpr);
+                t = runTree(currentExpr);
+                if(t.getOp() == Token::RETURN)
+                    break;
+                if(currentExpr->key.getType() == Token::RETURN)
+                {
+                    t.setOp(Token::RETURN);
+                    break;
+                }
             }
-            return Token("", Token::END_OF_LINE);
+            return t;
         }
         case Token::ASSIGN:
         {
@@ -247,11 +311,11 @@ Token Interpreter::doMathOperator(BinNode *tree)
             {
                 float lValf = std::stof(runTree(tree->left).getValue());
                 float rValf = std::stof(runTree(tree->right).getValue());
-                return Token(std::to_string(lValf - rValf), Token::FLOAT);
+                return Token(std::to_string(lValf * rValf), Token::FLOAT);
             }
             int lVal = std::stoi(runTree(tree->left).getValue());
             int rVal = std::stoi(runTree(tree->right).getValue());
-            return Token(std::to_string(lVal - rVal), Token::INTEGER);
+            return Token(std::to_string(lVal * rVal), Token::INTEGER);
         }
         case Token::DIV:
         {
@@ -259,11 +323,11 @@ Token Interpreter::doMathOperator(BinNode *tree)
             {
                 float lValf = std::stof(runTree(tree->left).getValue());
                 float rValf = std::stof(runTree(tree->right).getValue());
-                return Token(std::to_string(lValf - rValf), Token::FLOAT);
+                return Token(std::to_string(lValf / rValf), Token::FLOAT);
             }
             int lVal = std::stoi(runTree(tree->left).getValue());
             int rVal = std::stoi(runTree(tree->right).getValue());
-            return Token(std::to_string(lVal - rVal), Token::INTEGER);
+            return Token(std::to_string(lVal / rVal), Token::INTEGER);
         }
         default:
             throw std::runtime_error("Expected a math operator");
@@ -278,28 +342,6 @@ Token Interpreter::doCompareOperator(BinNode *tree)
 
     switch (type)
     {
-        case Token::IF:
-        {
-            Token conditionBool = runTree(tree->left);
-            if (conditionBool.getValue() == TRUE)
-                return runTree(tree->right);
-
-            auto* ifNode = (IfNode*)tree;
-
-            if(!ifNode->elseIfs.empty())
-            {
-                for(BinNode* elIf : ifNode->elseIfs)
-                {
-                    conditionBool = runTree(elIf->left);
-                    if (conditionBool.getValue() == TRUE)
-                        return runTree(elIf->right);
-                }
-            }
-
-            if(ifNode->elseBlock != nullptr)
-                return runTree(ifNode->elseBlock);
-            return Token("", Token::END_OF_LINE);
-        }
         case Token::IF_AND:
         {
             bool left = runTree(tree->left).getValue() == TRUE;

@@ -33,6 +33,7 @@
 #define LESS_THAN_EQUAL_REGEX "<="
 #define GREATER_THAN_REGEX ">"
 #define IF_NOT_REGEX "!"
+#define COMMA_REGEX ","
 #define GREATER_THAN_EQUAL_REGEX ">="
 #define PRINT_REGEX "(?:^|\\W)print(?:$|\\W)"
 #define PRINT_TYPE_REGEX "(?:^|\\W)type(?:$|\\W)"
@@ -40,6 +41,8 @@
 #define ELSE_REGEX "(?:^|\\W)else(?:$|\\W)"
 #define ELIF_REGEX "(?:^|\\W)else if(?:$|\\W)"
 #define INPUT_REGEX "(?:^|\\W)input(?:$|\\W)"
+#define DEF_REGEX "(?:^|\\W)def(?:$|\\W)"
+#define RETURN_REGEX "(?:^|\\W)return(?:$|\\W)"
 #define TRUE "true"
 #define FALSE "false"
 #define IF_REGEX "(?:^|\\W)if(?:$|\\W)"
@@ -67,6 +70,9 @@ public:
         ELSE,
         ELIF,
         INPUT,
+        DEF,
+        COMMA,
+        RETURN,
         ASSIGN,
         COMPARE_EQUAL,
         COMPARE_NOT_EQUAL,
@@ -121,6 +127,16 @@ public:
         Token::type = type;
     }
 
+    void setValue(const std::string &value)
+    {
+        Token::value = value;
+    }
+
+    void setOp(Type op)
+    {
+        Token::op = op;
+    }
+
     friend std::ostream &operator<<(std::ostream &os, const Token &token)
     {
         os << "{value: " << token.value << " type: " << token.type << " op: " << token.op << "}";
@@ -146,6 +162,9 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::ELSE, ELSE_REGEX},
                 {Token::ELIF, ELIF_REGEX},
                 {Token::INPUT, INPUT_REGEX},
+                {Token::DEF, DEF_REGEX},
+                {Token::COMMA, COMMA_REGEX},
+                {Token::RETURN, RETURN_REGEX},
                 {Token::Type::DIV, DIV_REGEX},
                 {Token::Type::LPAREN, LPAREN_REGEX},
                 {Token::Type::RPAREN, RPAREN_REGEX},
@@ -176,7 +195,7 @@ const std::map<Token::Type, std::string> TYPE_TO_STRINGS =
         };
 
 const std::unordered_set<Token::Type> COMPARE_OPERATORS = {
-        Token::COMPARE_EQUAL, Token::GREATER_THAN, Token::GREATER_THAN_EQUAL, Token::LESS_THAN, Token::LESS_THAN_EQUAL, Token::IF_AND, Token::IF_OR, Token::COMPARE_NOT_EQUAL, Token::IF_NOT, Token::IF
+        Token::COMPARE_EQUAL, Token::GREATER_THAN, Token::GREATER_THAN_EQUAL, Token::LESS_THAN, Token::LESS_THAN_EQUAL, Token::IF_AND, Token::IF_OR, Token::COMPARE_NOT_EQUAL, Token::IF_NOT
 };
 
 const std::unordered_set<Token::Type> LITERAL_TYPES = {

@@ -8,6 +8,7 @@
 #include "IfNode.hpp"
 #include "BinNode.hpp"
 #include "BlockNode.hpp"
+#include "FunctionNode.hpp"
 #include <vector>
 
 class Parser
