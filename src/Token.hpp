@@ -38,7 +38,7 @@
 #define PRINT_TYPE_REGEX "(?:^|\\W)type(?:$|\\W)"
 #define BOOL_REGEX "(?:^|\\W)true|false(?:$|\\W)"
 #define ELSE_REGEX "(?:^|\\W)else(?:$|\\W)"
-#define ELIF_REGEX "(?:^|\\W)elif(?:$|\\W)"
+#define ELIF_REGEX "(?:^|\\W)else if(?:$|\\W)"
 #define TRUE "true"
 #define FALSE "false"
 #define IF_REGEX "(?:^|\\W)if(?:$|\\W)"

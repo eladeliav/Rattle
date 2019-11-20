@@ -61,7 +61,7 @@ Token Lexer::getNextId()
 {
     std::string sResult;
 
-    while ((currentChar != '\0' && std::isalnum(currentChar)) || currentChar == '"')
+    while ((currentChar != '\0' && std::isalnum(currentChar)) || currentChar == '"' || sResult == "else")
     {
         sResult += currentChar;
         advance();
