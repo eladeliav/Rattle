@@ -167,9 +167,10 @@ Token Interpreter::runTree(BinNode *tree)
         case Token::INPUT:
         {
             Token val = runTree(tree->right);
-            std::cout << val.getValue() << std::endl;
+            std::cout << val.getValue();
             std::string input;
             std::cin >> input;
+            std::cout << "\r";
             Lexer tempLex(input);
             Token t = tempLex.getNextToken();
             //TODO: Return stuff only as string, add cast to types

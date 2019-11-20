@@ -61,7 +61,7 @@ Token Lexer::getNextId()
 {
     std::string sResult;
 
-    while ((currentChar != '\0' && std::isalnum(currentChar)) || currentChar == '"' || sResult == "else")
+    while ((currentChar != '\0' && std::isalnum(currentChar)) || currentChar == '"' || sResult == "else" || currentChar == '_')
     {
         sResult += currentChar;
         advance();
@@ -82,9 +82,13 @@ Token Lexer::getNextId()
             return Token(sResult, p.first);
         }
     }
-
-    Token token(sResult, Token::IDENTIFIER);
-    return token;
+    std::regex reg(TYPE_CHARS.at(Token::IDENTIFIER));
+    if (std::regex_match(sResult, reg))
+    {
+        Token token(sResult, Token::IDENTIFIER);
+        return token;
+    }
+    throw std::runtime_error("Unable to tokenize string");
 }
 
 Token Lexer::getNextToken()
