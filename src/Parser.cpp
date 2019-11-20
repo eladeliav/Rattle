@@ -56,7 +56,26 @@ BinNode *Parser::factor()
         eat(Token::PLUS);
         auto *node = new BinNode(Token(factor()->key.getValue(), Token::INTEGER, Token::PLUS));
         return node;
-    } else if (token.getType() == Token::MINUS)
+    }
+    else if(token.getType() == Token::IDENTIFIER)
+    {
+        eat(token.getType());
+        if(currentToken.getType() != Token::LPAREN)
+            return new BinNode(token);
+        // it's a function call
+        eat(Token::LPAREN);
+        auto* funcNode = new FunctionNode(token);
+        while(currentToken.getType() != Token::RPAREN)
+        {
+            funcNode->localScope.push_back(currentToken);
+            eat(currentToken.getType());
+            if(currentToken.getType() == Token::COMMA)
+                eat(Token::COMMA);
+        }
+        eat(Token::RPAREN);
+        return funcNode;
+    }
+    else if (token.getType() == Token::MINUS)
     {
         eat(Token::MINUS);
         auto *nextFactor = factor();
@@ -73,9 +92,16 @@ BinNode *Parser::factor()
     } else if (token.getType() == Token::PRINT || token.getType() == Token::PRINT_TYPE || token.getType() == Token::INPUT)
     {
         eat(token.getType());
-        eat(Token::Type::LPAREN);
         BinNode *e = expr();
-        eat(Token::Type::RPAREN);
+        auto *node = new BinNode(token);
+        node->right = e;
+        return node;
+    }
+    else if (token.getType() == Token::RETURN)
+    {
+        token.setOp(Token::RETURN);
+        eat(token.getType());
+        BinNode *e = expr();
         auto *node = new BinNode(token);
         node->right = e;
         return node;
@@ -83,9 +109,7 @@ BinNode *Parser::factor()
     else if(token.getType() == Token::IF)
     {
         eat(token.getType());
-        eat(Token::Type::LPAREN);
         BinNode *condition = expr();
-        eat(Token::Type::RPAREN);
         eat(currentToken.getType());
         eat(currentToken.getType());
         BlockNode* blockNode = getBlock();
@@ -98,9 +122,7 @@ BinNode *Parser::factor()
     else if(token.getType() == Token::ELIF)
     {
         eat(token.getType());
-        eat(Token::Type::LPAREN);
         BinNode *condition = expr();
-        eat(Token::Type::RPAREN);
         eat(currentToken.getType());
         eat(currentToken.getType());
         BlockNode* blockNode = getBlock();
@@ -133,6 +155,29 @@ BinNode *Parser::factor()
         if(currentToken.getType() == Token::RPAREN && inParenthesis)
             eat(Token::RPAREN);
         return node;
+    }
+    else if(token.getType() == Token::DEF)
+    {
+        eat(token.getType());
+        auto* funcNode = new FunctionNode(Token(currentToken.getValue(), Token::DEF));
+        eat(currentToken.getType());
+        eat(Token::LPAREN);
+        while(currentToken.getType() != Token::RPAREN)
+        {
+            if(currentToken.getType() != Token::IDENTIFIER)
+                throw std::runtime_error("Expected identifier token");
+
+            funcNode->localScope.push_back(currentToken);
+            eat(currentToken.getType());
+            if(currentToken.getType() == Token::COMMA)
+                eat(Token::COMMA);
+        }
+        eat(Token::RPAREN);
+        eat(currentToken.getType());
+        eat(currentToken.getType());
+        auto* blockNode = getBlock();
+        funcNode->left = blockNode;
+        return funcNode;
     }
     eat(token.getType());
     return new BinNode(token);

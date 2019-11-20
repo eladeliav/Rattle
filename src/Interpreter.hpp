@@ -30,6 +30,8 @@ private:
     static bool doAsString(BinNode *tree);
 
     static std::unordered_map<std::string, Token> variables;
+    static std::unordered_map<std::string, Token> currentScope;
+    static std::unordered_map<std::string, FunctionNode*> functions;
 };
 
 
