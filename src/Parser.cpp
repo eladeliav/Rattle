@@ -70,7 +70,7 @@ BinNode *Parser::factor()
         BinNode *node = expr();
         eat(Token::Type::RPAREN);
         return node;
-    } else if (token.getType() == Token::PRINT || token.getType() == Token::PRINT_TYPE)
+    } else if (token.getType() == Token::PRINT || token.getType() == Token::PRINT_TYPE || token.getType() == Token::INPUT)
     {
         eat(token.getType());
         eat(Token::Type::LPAREN);
