@@ -131,6 +131,13 @@ Token Lexer::getNextToken()
             return Token("==", Token::COMPARE_EQUAL);
         }
 
+        if (currentChar == '!' && peek() == '=')
+        {
+            advance();
+            advance();
+            return Token("!=", Token::COMPARE_NOT_EQUAL);
+        }
+
         if (currentChar == '&' && peek() == '&')
         {
             advance();

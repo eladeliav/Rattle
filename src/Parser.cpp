@@ -89,9 +89,34 @@ BinNode *Parser::factor()
         eat(currentToken.getType());
         eat(currentToken.getType());
         BlockNode* blockNode = getBlock();
-        auto* node = new BinNode(Token("if", Token::IF));
+        auto* node = new IfNode(Token("if", Token::IF));
         node->left = condition;
         node->right = blockNode;
+        lastIf = node;
+        return node;
+    }
+    else if(token.getType() == Token::ELSE)
+    {
+        eat(token.getType());
+        eat(currentToken.getType());
+        eat(currentToken.getType());
+        auto* blockNode = getBlock();
+        lastIf->elseBlock = blockNode;
+        return new BinNode();
+    }
+    else if(token.getType() == Token::IF_NOT)
+    {
+        auto* node = new BinNode(currentToken);
+        eat(token.getType());
+        bool inParenthesis = false;
+        if(currentToken.getType() == Token::LPAREN)
+        {
+            eat(Token::LPAREN);
+            inParenthesis = true;
+        }
+        node->left = expr(); // condition
+        if(currentToken.getType() == Token::RPAREN && inParenthesis)
+            eat(Token::RPAREN);
         return node;
     }
     eat(token.getType());
