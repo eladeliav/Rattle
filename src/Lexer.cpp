@@ -61,7 +61,7 @@ Token Lexer::getNextId()
 {
     std::string sResult;
 
-    while ((currentChar != '\0' && std::isalnum(currentChar)) || currentChar == '"')
+    while ((currentChar != '\0' && std::isalnum(currentChar)) || currentChar == '"' || sResult == "else")
     {
         sResult += currentChar;
         advance();
@@ -129,6 +129,13 @@ Token Lexer::getNextToken()
             advance();
             advance();
             return Token("==", Token::COMPARE_EQUAL);
+        }
+
+        if (currentChar == '!' && peek() == '=')
+        {
+            advance();
+            advance();
+            return Token("!=", Token::COMPARE_NOT_EQUAL);
         }
 
         if (currentChar == '&' && peek() == '&')

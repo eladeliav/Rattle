@@ -48,7 +48,7 @@ void printBT(const BinNode *node)
 std::string Interpreter::interpret()
 {
     BinNode *tree = parser.parse();
-    printBT(tree);
+    //printBT(tree);
     auto *ptr = tree;
     while (ptr != nullptr && ptr->key.getType() != Token::END_OF_FILE)
     {
@@ -97,13 +97,6 @@ Token Interpreter::runTree(BinNode *tree)
 
     switch (type)
     {
-        case Token::IF:
-        {
-            Token conditionBool = runTree(tree->left);
-            if (conditionBool.getValue() == TRUE)
-                return runTree(tree->right);
-            return Token("", Token::END_OF_LINE);
-        }
         case Token::IDENTIFIER:
         {
             return variables.find(tree->key.getValue()) != variables.end() ? variables[tree->key.getValue()] : Token(
@@ -180,10 +173,10 @@ bool Interpreter::doAsString(BinNode *tree)
     if (tree == nullptr)
         return false;
 
-    if (tree->key.getType() == Token::STRING)
+    if (tree->key.getType() == Token::STRING || tree->key.getType() == Token::BOOL)
         return true;
 
-    if (variables[tree->key.getValue()].getType() == Token::STRING)
+    if (variables[tree->key.getValue()].getType() == Token::STRING || variables[tree->key.getValue()].getType() == Token::BOOL)
         return true;
 
     bool stringInLeft = doAsString(tree->left);
@@ -271,6 +264,28 @@ Token Interpreter::doCompareOperator(BinNode *tree)
 
     switch (type)
     {
+        case Token::IF:
+        {
+            Token conditionBool = runTree(tree->left);
+            if (conditionBool.getValue() == TRUE)
+                return runTree(tree->right);
+
+            auto* ifNode = (IfNode*)tree;
+
+            if(!ifNode->elseIfs.empty())
+            {
+                for(BinNode* elIf : ifNode->elseIfs)
+                {
+                    conditionBool = runTree(elIf->left);
+                    if (conditionBool.getValue() == TRUE)
+                        return runTree(elIf->right);
+                }
+            }
+
+            if(ifNode->elseBlock != nullptr)
+                return runTree(ifNode->elseBlock);
+            return Token("", Token::END_OF_LINE);
+        }
         case Token::IF_AND:
         {
             bool left = runTree(tree->left).getValue() == TRUE;
@@ -288,6 +303,14 @@ Token Interpreter::doCompareOperator(BinNode *tree)
                 return Token("true", Token::BOOL);
             else
                 return Token("false", Token::BOOL);
+        }
+        case Token::IF_NOT:
+        {
+            bool condition = runTree(tree->left).getValue() == TRUE;
+            if(condition)
+                return Token("false", Token::BOOL);
+            else
+                return Token("true", Token::BOOL);
         }
         case Token::COMPARE_EQUAL:
         {
@@ -311,6 +334,32 @@ Token Interpreter::doCompareOperator(BinNode *tree)
             int lVal = std::stoi(runTree(tree->left).getValue());
             int rVal = std::stoi(runTree(tree->right).getValue());
             if (lVal == rVal)
+                return Token("true", Token::BOOL);
+            else
+                return Token("false", Token::BOOL);
+        }
+        case Token::COMPARE_NOT_EQUAL:
+        {
+            if (doAsStr)
+            {
+                std::string lVals = runTree(tree->left).getValue();
+                std::string rVals = runTree(tree->right).getValue();
+                if (lVals != rVals)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            } else if (doAsF)
+            {
+                float lValf = std::stof(runTree(tree->left).getValue());
+                float rValf = std::stof(runTree(tree->right).getValue());
+                if (lValf != rValf)
+                    return Token("true", Token::BOOL);
+                else
+                    return Token("false", Token::BOOL);
+            }
+            int lVal = std::stoi(runTree(tree->left).getValue());
+            int rVal = std::stoi(runTree(tree->right).getValue());
+            if (lVal != rVal)
                 return Token("true", Token::BOOL);
             else
                 return Token("false", Token::BOOL);

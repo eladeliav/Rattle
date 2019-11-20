@@ -5,6 +5,7 @@
 #ifndef RATTLE_PARSER_HPP
 #define RATTLE_PARSER_HPP
 #include "Lexer.hpp"
+#include "IfNode.hpp"
 #include "BinNode.hpp"
 #include "BlockNode.hpp"
 #include <vector>
@@ -14,6 +15,7 @@ class Parser
 private:
     Lexer lex;
     Token currentToken;
+    IfNode* lastIf;
 public:
     explicit Parser(Lexer lex);
     BinNode* parse();
