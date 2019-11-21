@@ -26,6 +26,8 @@ private:
 
     Token doCompareOperator(BinNode* tree);
 
+    Token doBuiltInFunctions(BinNode* tree);
+
     static bool doAsFloat(BinNode *tree);
 
     static bool doAsString(BinNode *tree);

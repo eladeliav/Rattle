@@ -29,7 +29,6 @@
 #define COMPARE_NOT_EQUAL_REGEX "!="
 #define IF_AND_REGEX "&&"
 #define IF_OR_REGEX "||"
-#define ONE_LINE_COMMENT_REGEX "//"
 #define LESS_THAN_REGEX "<"
 #define LESS_THAN_EQUAL_REGEX "<="
 #define GREATER_THAN_REGEX ">"
@@ -44,6 +43,9 @@
 #define INPUT_REGEX "(?:^|\\W)input(?:$|\\W)"
 #define DEF_REGEX "(?:^|\\W)def(?:$|\\W)"
 #define RETURN_REGEX "(?:^|\\W)return(?:$|\\W)"
+#define INT_CAST_REGEX "(?:^|\\W)int(?:$|\\W)"
+#define STRING_CAST_REGEX "(?:^|\\W)string(?:$|\\W)"
+#define FLOAT_CAST_REGEX "(?:^|\\W)float(?:$|\\W)"
 #define TRUE "true"
 #define FALSE "false"
 #define IF_REGEX "(?:^|\\W)if(?:$|\\W)"
@@ -87,6 +89,9 @@ public:
         PRINT,
         PRINT_TYPE,
         BLOCK,
+        INT_CAST,
+        STRING_CAST,
+        FLOAT_CAST,
         END_OF_FILE,
         END_OF_LINE
     };
@@ -184,6 +189,9 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::IDENTIFIER, IDENTIFIER_REGEX},
                 {Token::IF_AND, IF_AND_REGEX},
                 {Token::IF_OR, IF_OR_REGEX},
+                {Token::INT_CAST, INT_CAST_REGEX},
+                {Token::STRING_CAST, STRING_CAST_REGEX},
+                {Token::FLOAT_CAST, FLOAT_CAST_REGEX},
                 {Token::IF_NOT, IF_NOT_REGEX}
         };
 
@@ -194,6 +202,10 @@ const std::map<Token::Type, std::string> TYPE_TO_STRINGS =
                 {Token::Type::STRING,  "string"},
                 {Token::Type::BOOL,    "bool"}
         };
+
+const std::unordered_set<Token::Type> BUILT_IN_FUNCTIONS = {
+        Token::PRINT, Token::PRINT_TYPE, Token::INT_CAST, Token::STRING_CAST, Token::FLOAT_CAST, Token::INPUT
+};
 
 const std::unordered_set<Token::Type> COMPARE_OPERATORS = {
         Token::COMPARE_EQUAL, Token::GREATER_THAN, Token::GREATER_THAN_EQUAL, Token::LESS_THAN, Token::LESS_THAN_EQUAL, Token::IF_AND, Token::IF_OR, Token::COMPARE_NOT_EQUAL, Token::IF_NOT
