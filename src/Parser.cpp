@@ -189,7 +189,9 @@ BlockNode *Parser::getBlock()
 
     while(currentToken.getType() != Token::RBRACE)
     {
-        blockNode->block.push_back(expr());
+        BinNode* e = expr();
+        e->key.setOp(Token::BLOCK);
+        blockNode->block.push_back(e);
         if(currentToken.getType() == Token::END_OF_LINE)
             eat(Token::END_OF_LINE);
     }

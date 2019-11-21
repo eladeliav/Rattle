@@ -7,7 +7,7 @@
 std::unordered_map<std::string, Token> Interpreter::variables;
 std::unordered_map<std::string, Token> Interpreter::currentScope;
 std::stack<std::unordered_map<std::string, Token>> Interpreter::scopes;
-std::unordered_map<std::string, FunctionNode*> Interpreter::functions;
+std::unordered_map<std::string, FunctionNode *> Interpreter::functions;
 
 Interpreter::Interpreter(const Parser &parser) : parser(parser)
 {}
@@ -23,13 +23,12 @@ void printBT(const std::string &prefix, const BinNode *node, bool isLeft)
         std::cout << (isLeft ? "|--" : "\\-- ");
 
         // print the value of the node
-        if(node->key.getType() == Token::BLOCK)
+        if (node->key.getType() == Token::BLOCK)
         {
-            BlockNode* c = (BlockNode*)node;
-            for(BinNode* p : c->block)
+            BlockNode *c = (BlockNode *) node;
+            for (BinNode *p : c->block)
                 printBT(p);
-        }
-        else
+        } else
             std::cout << node->key.getValue() << std::endl;
 
         // enter the next tree level - left and right branch
@@ -40,7 +39,7 @@ void printBT(const std::string &prefix, const BinNode *node, bool isLeft)
 
 void printBT(const BinNode *node)
 {
-    auto* ptr = node;
+    auto *ptr = node;
     while (ptr != nullptr && ptr->key.getType() != Token::END_OF_FILE)
     {
         printBT("", ptr, false);
@@ -93,7 +92,7 @@ Token Interpreter::runTree(BinNode *tree)
         return tree->key;
     }
 
-    if(COMPARE_OPERATORS.find(type) != COMPARE_OPERATORS.end())
+    if (COMPARE_OPERATORS.find(type) != COMPARE_OPERATORS.end())
     {
         return doCompareOperator(tree);
     }
@@ -106,11 +105,11 @@ Token Interpreter::runTree(BinNode *tree)
             if (conditionBool.getValue() == TRUE)
                 return runTree(tree->right);
 
-            auto* ifNode = (IfNode*)tree;
+            auto *ifNode = (IfNode *) tree;
 
-            if(!ifNode->elseIfs.empty())
+            if (!ifNode->elseIfs.empty())
             {
-                for(BinNode* elIf : ifNode->elseIfs)
+                for (BinNode *elIf : ifNode->elseIfs)
                 {
                     conditionBool = runTree(elIf->left);
                     if (conditionBool.getValue() == TRUE)
@@ -118,43 +117,42 @@ Token Interpreter::runTree(BinNode *tree)
                 }
             }
 
-            if(ifNode->elseBlock != nullptr)
+            if (ifNode->elseBlock != nullptr)
                 return runTree(ifNode->elseBlock);
             return Token("", Token::END_OF_LINE);
         }
         case Token::IDENTIFIER:
         {
-            if(auto* funcCast = dynamic_cast<FunctionNode*>(tree))
+            if (auto *funcCast = dynamic_cast<FunctionNode *>(tree))
             {
-                if(functions.find(funcCast->key.getValue()) == functions.end())
+                if (functions.find(funcCast->key.getValue()) == functions.end())
                     return Token("Function not found", Token::END_OF_LINE);
                 // needs to run function
-                FunctionNode* funcToRun = functions[funcCast->key.getValue()];
-                if(funcCast->localScope.size() != funcToRun->localScope.size())
+                FunctionNode *funcToRun = functions[funcCast->key.getValue()];
+                if (funcCast->localScope.size() != funcToRun->localScope.size())
                     throw std::runtime_error("Wrong number of arguments to function: " + funcToRun->key.getValue() +
-                    ", Expected: " + std::to_string(funcToRun->localScope.size()) + ", Got: " + std::to_string(funcCast->localScope.size()));
+                                             ", Expected: " + std::to_string(funcToRun->localScope.size()) + ", Got: " +
+                                             std::to_string(funcCast->localScope.size()));
                 scopes.push(currentScope);
-                for(size_t i = 0; i < funcToRun->localScope.size();i++)
+                for (size_t i = 0; i < funcToRun->localScope.size(); i++)
                 {
                     Token afterRun = runTree(funcCast->localScope.at(i));
-                    currentScope[funcToRun->localScope.at(i)->key.getValue()] =  afterRun;
+                    currentScope[funcToRun->localScope.at(i)->key.getValue()] = afterRun;
                 }
                 Token returnToken = runTree(funcToRun->left);
-                currentScope = scopes.top();
-                scopes.pop();
                 return returnToken;
             }
-            if(currentScope.find(tree->key.getValue()) != currentScope.end())
+            if (currentScope.find(tree->key.getValue()) != currentScope.end())
                 return runTree(new BinNode(currentScope[tree->key.getValue()]));
             return variables.find(tree->key.getValue()) != variables.end() ? variables[tree->key.getValue()] : Token(
                     "Variable not found", Token::END_OF_LINE);
         }
         case Token::DEF:
         {
-            if(functions.find(tree->key.getValue()) != functions.end())
+            if (functions.find(tree->key.getValue()) != functions.end())
                 throw std::runtime_error("Function redefined");
 
-            auto* funcCast = (FunctionNode*)tree;
+            auto *funcCast = (FunctionNode *) tree;
             functions[tree->key.getValue()] = funcCast;
             return Token("", Token::END_OF_LINE);
         }
@@ -174,7 +172,7 @@ Token Interpreter::runTree(BinNode *tree)
             Lexer tempLex(input);
             Token t = tempLex.getNextToken();
             //TODO: Return stuff only as string, add cast to types
-            if(t.getType() != Token::INTEGER && t.getType() != Token::FLOAT && t.getType() != Token::BOOL)
+            if (t.getType() != Token::INTEGER && t.getType() != Token::FLOAT && t.getType() != Token::BOOL)
                 t.setType(Token::STRING);
             return t;
         }
@@ -195,13 +193,21 @@ Token Interpreter::runTree(BinNode *tree)
             for (BinNode *currentExpr : ca->block)
             {
                 t = runTree(currentExpr);
-                if(t.getOp() == Token::RETURN)
+                if (t.getOp() == Token::RETURN)
                     break;
-                if(currentExpr->key.getType() == Token::RETURN)
+                if (currentExpr->key.getType() == Token::RETURN)
                 {
                     t.setOp(Token::RETURN);
                     break;
                 }
+            }
+            if (scopes.empty())
+            {
+                currentScope.clear();
+            } else
+            {
+                currentScope = scopes.top();
+                scopes.pop();
             }
             return t;
         }
@@ -209,14 +215,16 @@ Token Interpreter::runTree(BinNode *tree)
         {
             std::string id = tree->left->key.getValue();
             Token val = runTree(tree->right);
-            if (variables.find(val.getValue()) != variables.end())
+            std::unordered_map<std::string, Token> &varScope =
+                    tree->key.getOp() == Token::BLOCK ? currentScope : variables;
+            if (varScope.find(val.getValue()) != varScope.end())
             {
-                variables[id] = variables[val.getValue()];
+                varScope[id] = varScope[val.getValue()];
             } else
             {
-                variables[id] = val;
+                varScope[id] = val;
             }
-            return variables[id];
+            return varScope[id];
         }
         case Token::END_OF_FILE:
         {
@@ -240,12 +248,18 @@ bool Interpreter::doAsFloat(BinNode *tree)
     if (tree->key.getType() == Token::FLOAT)
         return true;
 
-    if (variables[tree->key.getValue()].getType() == Token::FLOAT)
-        return true;
+    bool inCurrentScope = currentScope.find(tree->key.getValue()) != currentScope.end();
+    bool inGlobalScope = variables.find(tree->key.getValue()) != variables.end();
 
-    bool stringInLeft = doAsString(tree->left);
+    if (inCurrentScope)
+        return currentScope[tree->key.getValue()].getType() == Token::FLOAT;
 
-    bool stringInRight = doAsString(tree->right);
+    if (inGlobalScope)
+        return variables[tree->key.getValue()].getType() == Token::FLOAT;
+
+    bool stringInLeft = doAsFloat(tree->left);
+
+    bool stringInRight = doAsFloat(tree->right);
 
     return stringInLeft || stringInRight;
 }
@@ -258,15 +272,22 @@ bool Interpreter::doAsString(BinNode *tree)
     if (tree->key.getType() == Token::STRING || tree->key.getType() == Token::BOOL)
         return true;
 
-    if (variables[tree->key.getValue()].getType() == Token::STRING || variables[tree->key.getValue()].getType() == Token::BOOL)
-        return true;
+    bool inCurrentScope = currentScope.find(tree->key.getValue()) != currentScope.end();
+    bool inGlobalScope = variables.find(tree->key.getValue()) != variables.end();
+
+    if (inCurrentScope)
+        return currentScope[tree->key.getValue()].getType() == Token::STRING ||
+               currentScope[tree->key.getValue()].getType() == Token::BOOL;
+
+    if (inGlobalScope)
+        return variables[tree->key.getValue()].getType() == Token::STRING ||
+                variables[tree->key.getValue()].getType() == Token::BOOL;
 
     bool stringInLeft = doAsString(tree->left);
 
     bool stringInRight = doAsString(tree->right);
 
     return stringInLeft || stringInRight;
-
 }
 
 Token Interpreter::doMathOperator(BinNode *tree)
@@ -350,7 +371,7 @@ Token Interpreter::doCompareOperator(BinNode *tree)
         {
             bool left = runTree(tree->left).getValue() == TRUE;
             bool right = runTree(tree->right).getValue() == TRUE;
-            if(left && right)
+            if (left && right)
                 return Token("true", Token::BOOL);
             else
                 return Token("false", Token::BOOL);
@@ -359,7 +380,7 @@ Token Interpreter::doCompareOperator(BinNode *tree)
         {
             bool left = runTree(tree->left).getValue() == TRUE;
             bool right = runTree(tree->right).getValue() == TRUE;
-            if(left || right)
+            if (left || right)
                 return Token("true", Token::BOOL);
             else
                 return Token("false", Token::BOOL);
@@ -367,7 +388,7 @@ Token Interpreter::doCompareOperator(BinNode *tree)
         case Token::IF_NOT:
         {
             bool condition = runTree(tree->left).getValue() == TRUE;
-            if(condition)
+            if (condition)
                 return Token("false", Token::BOOL);
             else
                 return Token("true", Token::BOOL);
