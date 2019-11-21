@@ -33,6 +33,28 @@ void Lexer::skip_whitespaces()
         advance();
 }
 
+void Lexer::skip_comments(bool multiLine)
+{
+    if(!multiLine)
+    {
+        while (currentChar != '\n')
+        {
+            advance();
+        }
+        advance();
+    }
+    else
+    {
+        advance();
+        advance();
+        while(currentChar != '*' && peek() != '/')
+            advance();
+        advance();
+        advance();
+    }
+}
+
+
 Token Lexer::getNextNumber()
 {
     std::string sResult;
@@ -106,6 +128,20 @@ Token Lexer::getNextToken()
         {
             skip_whitespaces();
             continue;
+        }
+
+        if (currentChar == '/')
+        {
+            if(peek() == '*')
+            {
+                skip_comments(true);
+                continue;
+            }
+            else if (peek() == '/')
+            {
+                skip_comments(false);
+                continue;
+            }
         }
 
         if (currentChar == '"')

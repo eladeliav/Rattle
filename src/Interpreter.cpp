@@ -97,6 +97,11 @@ Token Interpreter::runTree(BinNode *tree)
         return doCompareOperator(tree);
     }
 
+    if (BUILT_IN_FUNCTIONS.find(type) != BUILT_IN_FUNCTIONS.end())
+    {
+        return doBuiltInFunctions(tree);
+    }
+
     switch (type)
     {
         case Token::IF:
@@ -155,32 +160,6 @@ Token Interpreter::runTree(BinNode *tree)
             auto *funcCast = (FunctionNode *) tree;
             functions[tree->key.getValue()] = funcCast;
             return Token("", Token::END_OF_LINE);
-        }
-        case Token::PRINT:
-        {
-            Token val = runTree(tree->right);
-            std::cout << val.getValue() << std::endl;
-            return val;
-        }
-        case Token::INPUT:
-        {
-            Token val = runTree(tree->right);
-            std::cout << val.getValue();
-            std::string input;
-            std::cin >> input;
-            std::cout << "\r";
-            Lexer tempLex(input);
-            Token t = tempLex.getNextToken();
-            //TODO: Return stuff only as string, add cast to types
-            if (t.getType() != Token::INTEGER && t.getType() != Token::FLOAT && t.getType() != Token::BOOL)
-                t.setType(Token::STRING);
-            return t;
-        }
-        case Token::PRINT_TYPE:
-        {
-            Token token = runTree(tree->right);
-            return token.getType() == Token::END_OF_LINE ? token : Token(
-                    TYPE_TO_STRINGS.at(runTree(tree->right).getType()), Token::END_OF_LINE);
         }
         case Token::RETURN:
         {
@@ -551,5 +530,87 @@ Token Interpreter::doCompareOperator(BinNode *tree)
         }
         default:
             throw std::runtime_error("Expected a compare operator");
+    }
+}
+
+Token Interpreter::doBuiltInFunctions(BinNode *tree)
+{
+    Token::Type type = tree->key.getType();
+
+    switch (type)
+    {
+        case Token::INT_CAST:
+        {
+            Token toCast = tree->right->key;
+            std::stoi(runTree(tree->right).getValue());
+            toCast.setType(Token::INTEGER);
+            bool inCurrentScope = currentScope.find(toCast.getValue()) != currentScope.end();
+            bool inGlobalScope = variables.find(toCast.getValue()) != variables.end();
+
+            if(inCurrentScope)
+                currentScope[toCast.getValue()] = toCast;
+
+            if(inGlobalScope && !inCurrentScope)
+                currentScope[toCast.getValue()] = toCast;
+
+            return toCast;
+        }
+        case Token::STRING_CAST:
+        {
+            Token toCast = tree->right->key;
+            toCast.setType(Token::STRING);
+            bool inCurrentScope = currentScope.find(toCast.getValue()) != currentScope.end();
+            bool inGlobalScope = variables.find(toCast.getValue()) != variables.end();
+
+            if(inCurrentScope)
+                currentScope[toCast.getValue()] = toCast;
+
+            if(inGlobalScope && !inCurrentScope)
+                currentScope[toCast.getValue()] = toCast;
+            return toCast;
+        }
+        case Token::FLOAT_CAST:
+        {
+            Token toCast = tree->right->key;
+            std::stof(runTree(tree->right).getValue());
+            toCast.setType(Token::INTEGER);
+            bool inCurrentScope = currentScope.find(toCast.getValue()) != currentScope.end();
+            bool inGlobalScope = variables.find(toCast.getValue()) != variables.end();
+
+            if(inCurrentScope)
+                currentScope[toCast.getValue()] = toCast;
+
+            if(inGlobalScope && !inCurrentScope)
+                currentScope[toCast.getValue()] = toCast;
+            return toCast;
+        }
+        case Token::PRINT:
+        {
+            Token val = runTree(tree->right);
+            std::cout << val.getValue() << std::endl;
+            return val;
+        }
+        case Token::INPUT:
+        {
+            Token val = runTree(tree->right);
+            std::cout << val.getValue();
+            std::string input;
+            std::cin >> input;
+            std::cout << "\r";
+            Lexer tempLex(input);
+            Token t = tempLex.getNextToken();
+            //TODO: Return stuff only as string, add cast to types
+            if (t.getType() != Token::BOOL)
+                t.setType(Token::STRING);
+            return t;
+        }
+        case Token::PRINT_TYPE:
+        {
+            Token token = runTree(tree->right);
+            return token.getType() == Token::END_OF_LINE ? token : Token(
+                    TYPE_TO_STRINGS.at(runTree(tree->right).getType()), Token::END_OF_LINE);
+        }
+        default:
+            throw std::runtime_error("Expected a built-in function");
     }
 }
