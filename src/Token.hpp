@@ -42,6 +42,7 @@
 #define ELIF_REGEX "(?:^|\\W)else if(?:$|\\W)"
 #define INPUT_REGEX "(?:^|\\W)input(?:$|\\W)"
 #define DEF_REGEX "(?:^|\\W)def(?:$|\\W)"
+#define WHILE_REGEX "(?:^|\\W)while(?:$|\\W)"
 #define RETURN_REGEX "(?:^|\\W)return(?:$|\\W)"
 #define INT_CAST_REGEX "(?:^|\\W)int(?:$|\\W)"
 #define STRING_CAST_REGEX "(?:^|\\W)string(?:$|\\W)"
@@ -73,6 +74,7 @@ public:
         ELSE,
         ELIF,
         INPUT,
+        WHILE,
         DEF,
         COMMA,
         RETURN,
@@ -169,6 +171,7 @@ const std::map<Token::Type, std::string> TYPE_CHARS =
                 {Token::ELIF, ELIF_REGEX},
                 {Token::INPUT, INPUT_REGEX},
                 {Token::DEF, DEF_REGEX},
+                {Token::WHILE, WHILE_REGEX},
                 {Token::COMMA, COMMA_REGEX},
                 {Token::RETURN, RETURN_REGEX},
                 {Token::Type::DIV, DIV_REGEX},

@@ -541,8 +541,13 @@ Token Interpreter::doBuiltInFunctions(BinNode *tree)
     {
         case Token::INT_CAST:
         {
-            Token toCast = tree->right->key;
-            std::stoi(runTree(tree->right).getValue());
+            Token toCast;
+            Token treeRun = runTree(tree->right);
+            if(tree->key.getType() == Token::IDENTIFIER)
+                toCast = tree->right->key;
+            else
+                toCast = treeRun;
+            std::stoi(treeRun.getValue());
             toCast.setType(Token::INTEGER);
             bool inCurrentScope = currentScope.find(toCast.getValue()) != currentScope.end();
             bool inGlobalScope = variables.find(toCast.getValue()) != variables.end();
@@ -557,7 +562,11 @@ Token Interpreter::doBuiltInFunctions(BinNode *tree)
         }
         case Token::STRING_CAST:
         {
-            Token toCast = tree->right->key;
+            Token toCast;
+            if(tree->key.getType() == Token::IDENTIFIER)
+                toCast = tree->right->key;
+            else
+                toCast = runTree(tree->right);
             toCast.setType(Token::STRING);
             bool inCurrentScope = currentScope.find(toCast.getValue()) != currentScope.end();
             bool inGlobalScope = variables.find(toCast.getValue()) != variables.end();
@@ -571,7 +580,11 @@ Token Interpreter::doBuiltInFunctions(BinNode *tree)
         }
         case Token::FLOAT_CAST:
         {
-            Token toCast = tree->right->key;
+            Token toCast;
+            if(tree->key.getType() == Token::IDENTIFIER)
+                toCast = tree->right->key;
+            else
+                toCast = runTree(tree->right);
             std::stof(runTree(tree->right).getValue());
             toCast.setType(Token::INTEGER);
             bool inCurrentScope = currentScope.find(toCast.getValue()) != currentScope.end();
