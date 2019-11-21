@@ -29,6 +29,7 @@
 #define COMPARE_NOT_EQUAL_REGEX "!="
 #define IF_AND_REGEX "&&"
 #define IF_OR_REGEX "||"
+#define ONE_LINE_COMMENT_REGEX "//"
 #define LESS_THAN_REGEX "<"
 #define LESS_THAN_EQUAL_REGEX "<="
 #define GREATER_THAN_REGEX ">"

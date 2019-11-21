@@ -27,6 +27,8 @@ public:
 
     void skip_whitespaces();
 
+    void skip_comments(bool multiLine);
+
     Token getNextNumber();
 
     Token getNextToken();
