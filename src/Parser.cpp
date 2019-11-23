@@ -95,7 +95,9 @@ BinNode *Parser::factor()
     } else if (BUILT_IN_FUNCTIONS.find(currentToken.getType()) != BUILT_IN_FUNCTIONS.end())
     {
         eat(token.getType());
+        eat(Token::Type::LPAREN);
         BinNode *e = expr();
+        eat(Token::Type::RPAREN);
         auto *node = new BinNode(token);
         node->right = e;
         return node;
