@@ -17,6 +17,7 @@ private:
     Lexer lex;
     Token currentToken;
     IfNode* lastIf;
+    bool inFunc = false;
 public:
     explicit Parser(Lexer lex);
     BinNode* parse();
