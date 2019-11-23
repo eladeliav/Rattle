@@ -60,6 +60,10 @@ BinNode *Parser::factor()
     else if(token.getType() == Token::IDENTIFIER)
     {
         eat(token.getType());
+        if(inFunc)
+            token.setOp(Token::BLOCK);
+        else
+            token.setOp(Token::GLOBAL);
         if(currentToken.getType() != Token::LPAREN)
             return new BinNode(token);
         // it's a function call
@@ -169,6 +173,7 @@ BinNode *Parser::factor()
     }
     else if(token.getType() == Token::DEF)
     {
+        inFunc = true;
         eat(token.getType());
         auto* funcNode = new FunctionNode(Token(currentToken.getValue(), Token::DEF));
         eat(currentToken.getType());
@@ -188,6 +193,7 @@ BinNode *Parser::factor()
         eat(currentToken.getType());
         auto* blockNode = getBlock();
         funcNode->left = blockNode;
+        inFunc = false;
         return funcNode;
     }
     eat(token.getType());

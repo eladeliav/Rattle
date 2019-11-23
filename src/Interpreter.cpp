@@ -126,12 +126,19 @@ Token Interpreter::runTree(BinNode *tree)
                 return runTree(ifNode->elseBlock);
             return Token("", Token::END_OF_LINE);
         }
+        case Token::WHILE:
+        {
+            Token final;
+            while (runTree(tree->left).getValue() == TRUE)
+                final = runTree(tree->right);
+            return final;
+        }
         case Token::IDENTIFIER:
         {
             if (auto *funcCast = dynamic_cast<FunctionNode *>(tree))
             {
                 if (functions.find(funcCast->key.getValue()) == functions.end())
-                    return Token("Function not found", Token::END_OF_LINE);
+                    throw std::runtime_error("Function not found");
                 // needs to run function
                 FunctionNode *funcToRun = functions[funcCast->key.getValue()];
                 if (funcCast->localScope.size() != funcToRun->localScope.size())
@@ -145,12 +152,25 @@ Token Interpreter::runTree(BinNode *tree)
                     currentScope[funcToRun->localScope.at(i)->key.getValue()] = afterRun;
                 }
                 Token returnToken = runTree(funcToRun->left);
+                if (scopes.empty())
+                {
+                    currentScope.clear();
+                } else
+                {
+                    currentScope = scopes.top();
+                    scopes.pop();
+                }
                 return returnToken;
             }
-            if (currentScope.find(tree->key.getValue()) != currentScope.end())
-                return runTree(new BinNode(currentScope[tree->key.getValue()]));
-            return variables.find(tree->key.getValue()) != variables.end() ? variables[tree->key.getValue()] : Token(
-                    "Variable not found", Token::END_OF_LINE);
+            Token tok = tree->key;
+            if (tok.getOp() == Token::BLOCK)
+            {
+                if (currentScope.find(tree->key.getValue()) != currentScope.end())
+                    return runTree(new BinNode(currentScope[tree->key.getValue()]));
+            } else if (variables.find(tree->key.getValue()) != variables.end() && tok.getOp() == Token::GLOBAL)
+                return variables[tree->key.getValue()];
+
+            return Token("Variable not found", Token::END_OF_LINE);
         }
         case Token::DEF:
         {
@@ -180,14 +200,6 @@ Token Interpreter::runTree(BinNode *tree)
                     break;
                 }
             }
-            if (scopes.empty())
-            {
-                currentScope.clear();
-            } else
-            {
-                currentScope = scopes.top();
-                scopes.pop();
-            }
             return t;
         }
         case Token::ASSIGN:
@@ -195,7 +207,7 @@ Token Interpreter::runTree(BinNode *tree)
             std::string id = tree->left->key.getValue();
             Token val = runTree(tree->right);
             std::unordered_map<std::string, Token> &varScope =
-                    tree->key.getOp() == Token::BLOCK ? currentScope : variables;
+                    tree->left->key.getOp() == Token::BLOCK ? currentScope : variables;
             if (varScope.find(val.getValue()) != varScope.end())
             {
                 varScope[id] = varScope[val.getValue()];
@@ -260,7 +272,7 @@ bool Interpreter::doAsString(BinNode *tree)
 
     if (inGlobalScope)
         return variables[tree->key.getValue()].getType() == Token::STRING ||
-                variables[tree->key.getValue()].getType() == Token::BOOL;
+               variables[tree->key.getValue()].getType() == Token::BOOL;
 
     bool stringInLeft = doAsString(tree->left);
 
@@ -543,7 +555,7 @@ Token Interpreter::doBuiltInFunctions(BinNode *tree)
         {
             Token toCast;
             Token treeRun = runTree(tree->right);
-            if(tree->key.getType() == Token::IDENTIFIER)
+            if (tree->key.getType() == Token::IDENTIFIER)
                 toCast = tree->right->key;
             else
                 toCast = treeRun;
@@ -552,10 +564,10 @@ Token Interpreter::doBuiltInFunctions(BinNode *tree)
             bool inCurrentScope = currentScope.find(toCast.getValue()) != currentScope.end();
             bool inGlobalScope = variables.find(toCast.getValue()) != variables.end();
 
-            if(inCurrentScope)
+            if (inCurrentScope)
                 currentScope[toCast.getValue()] = toCast;
 
-            if(inGlobalScope && !inCurrentScope)
+            if (inGlobalScope && !inCurrentScope)
                 currentScope[toCast.getValue()] = toCast;
 
             return toCast;
@@ -563,7 +575,7 @@ Token Interpreter::doBuiltInFunctions(BinNode *tree)
         case Token::STRING_CAST:
         {
             Token toCast;
-            if(tree->key.getType() == Token::IDENTIFIER)
+            if (tree->key.getType() == Token::IDENTIFIER)
                 toCast = tree->right->key;
             else
                 toCast = runTree(tree->right);
@@ -571,17 +583,17 @@ Token Interpreter::doBuiltInFunctions(BinNode *tree)
             bool inCurrentScope = currentScope.find(toCast.getValue()) != currentScope.end();
             bool inGlobalScope = variables.find(toCast.getValue()) != variables.end();
 
-            if(inCurrentScope)
+            if (inCurrentScope)
                 currentScope[toCast.getValue()] = toCast;
 
-            if(inGlobalScope && !inCurrentScope)
+            if (inGlobalScope && !inCurrentScope)
                 currentScope[toCast.getValue()] = toCast;
             return toCast;
         }
         case Token::FLOAT_CAST:
         {
             Token toCast;
-            if(tree->key.getType() == Token::IDENTIFIER)
+            if (tree->key.getType() == Token::IDENTIFIER)
                 toCast = tree->right->key;
             else
                 toCast = runTree(tree->right);
@@ -590,10 +602,10 @@ Token Interpreter::doBuiltInFunctions(BinNode *tree)
             bool inCurrentScope = currentScope.find(toCast.getValue()) != currentScope.end();
             bool inGlobalScope = variables.find(toCast.getValue()) != variables.end();
 
-            if(inCurrentScope)
+            if (inCurrentScope)
                 currentScope[toCast.getValue()] = toCast;
 
-            if(inGlobalScope && !inCurrentScope)
+            if (inGlobalScope && !inCurrentScope)
                 currentScope[toCast.getValue()] = toCast;
             return toCast;
         }

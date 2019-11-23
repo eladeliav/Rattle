@@ -89,6 +89,7 @@ public:
         IF_OR,
         IF_NOT,
         PRINT,
+        GLOBAL,
         PRINT_TYPE,
         BLOCK,
         INT_CAST,
@@ -154,7 +155,7 @@ public:
 private:
     std::string value;
     Type type;
-    Type op;
+    Type op = Token::GLOBAL;
 };
 
 const std::map<Token::Type, std::string> TYPE_CHARS =
